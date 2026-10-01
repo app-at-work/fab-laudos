@@ -351,6 +351,18 @@
   .filtros-checkboxes label:hover { border-color: var(--teal); }
   .filtros-data { display: flex; gap: 8px; align-items: center; font-size: 12px; }
   .filtros-data input { flex: 1; }
+  .ms-wrap { position: relative; }
+  .ms-btn { width:100%; display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--border); border-radius:4px; background:white; color:var(--text); font-size:13px; cursor:pointer; text-align:left; }
+  .ms-btn span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ms-btn:hover { border-color: var(--teal); }
+  .ms-panel { margin-top:4px; border:1px solid var(--teal); border-radius:4px; background:white; padding:6px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+  .ms-busca { width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+  .ms-acoes { display:flex; gap:12px; font-size:11px; margin:6px 2px; }
+  .ms-acoes a { color:var(--teal); cursor:pointer; text-decoration:underline; }
+  .ms-lista { max-height:200px; overflow-y:auto; }
+  .ms-item { display:flex !important; align-items:center; gap:6px; font-size:12px !important; font-weight:400 !important; color:var(--text) !important; padding:3px 4px; margin:0 !important; cursor:pointer; border-radius:3px; }
+  .ms-item:hover { background:var(--teal-light); }
+  .ms-vazio { font-size:11px; color:var(--text-muted); padding:6px 4px; }
   .btn.danger { background: var(--danger); color: white; }
   .btn.danger:hover { background: #8b1414; }
   .btn-badge { background: var(--danger); color: white; border-radius: 10px; padding: 1px 7px; font-size: 11px; margin-left: 6px; }
@@ -786,7 +798,7 @@
   let EDITANDO_AMOSTRA = null; let EDITANDO_IDX = -1; let EDITANDO_UID = null; let CONTROLE_FLAT = [];
   function _novoId(){ try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){} return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,10); }
   let LINHAS_FILTRADAS_CACHE = []; let IMPORT_REGISTROS_VALIDOS = [];
-  const FILTROS_AVANCADOS = { OVERALL_INTERP: new Set(), COMP_DESC: new Set(), Acao: new Set(), AvaliacaoAnalista: new Set(), EQUIP_NUMBER: '', TEXT_ID: '', SAMPLED_DATE: { de:'', ate:'' }, PROCESS_DATE: { de:'', ate:'' }, INTERP_DATE_TIME: { de:'', ate:'' }, STATUS: 'TODOS' };
+  const FILTROS_AVANCADOS = { OVERALL_INTERP: new Set(), COMP_DESC: new Set(), Acao: new Set(), AvaliacaoAnalista: new Set(), EQUIP_NUMBER: new Set(), TEXT_ID: new Set(), SAMPLED_DATE: { de:'', ate:'' }, PROCESS_DATE: { de:'', ate:'' }, INTERP_DATE_TIME: { de:'', ate:'' }, STATUS: 'TODOS' };
 
   let diretorioHandle = null;
   let ATIVIDADES_HANDLE = null;
@@ -1616,12 +1628,12 @@ Requisitos: Chrome ou Edge 86+</pre>`;
     const tRef = (dataLinha instanceof Date && !isNaN(dataLinha)) ? dataLinha.getTime() : null;
     let arr = (idx && idx.has(key)) ? idx.get(key) : [];
     arr = arr.filter(function(it){
-      if (it.textId === tidLinha) return false;   // ignora o proprio laudo
-      if (tRef === null) return false;            // linha sem data: sem historico
-      if (it.t === -Infinity) return false;       // laudo sem data: ignora
-      return it.t < tRef;                         // somente anteriores a amostra
+      if (it.textId === tidLinha) return false;
+      if (tRef === null) return false;
+      if (it.t === -Infinity) return false;
+      return it.t < tRef;
     });
-    const ultimos5 = arr.slice(0,5);              // arr ja vem em ordem decrescente
+    const ultimos5 = arr.slice(0,5);
     const ordemVisual = ultimos5.slice().reverse();
     const nVazias = 5 - ordemVisual.length;
     let out = '<span style="display:inline-flex; gap:3px; align-items:center;">';
@@ -2608,10 +2620,8 @@ for (const linha of d.linhas) {
     let n = 0;
     if (FILTROS_AVANCADOS.OVERALL_INTERP.size) n++;
     if (FILTROS_AVANCADOS.COMP_DESC.size) n++;
-    if (FILTROS_AVANCADOS.Acao.size) n++;
-    if (FILTROS_AVANCADOS.AvaliacaoAnalista.size) n++;
-    if (FILTROS_AVANCADOS.EQUIP_NUMBER) n++;
-    if (FILTROS_AVANCADOS.TEXT_ID) n++;
+    if (FILTROS_AVANCADOS.EQUIP_NUMBER.size) n++;
+    if (FILTROS_AVANCADOS.TEXT_ID.size) n++;
     if (FILTROS_AVANCADOS.SAMPLED_DATE.de || FILTROS_AVANCADOS.SAMPLED_DATE.ate) n++;
     if (FILTROS_AVANCADOS.PROCESS_DATE.de || FILTROS_AVANCADOS.PROCESS_DATE.ate) n++;
     if (FILTROS_AVANCADOS.INTERP_DATE_TIME.de || FILTROS_AVANCADOS.INTERP_DATE_TIME.ate) n++;
@@ -2660,10 +2670,8 @@ for (const linha of d.linhas) {
     const F = FILTROS_AVANCADOS;
     if (F.OVERALL_INTERP.size && !F.OVERALL_INTERP.has(String(l.OVERALL_INTERP||''))) return false;
     if (F.COMP_DESC.size && !F.COMP_DESC.has(String(l.COMP_DESC||''))) return false;
-    if (F.Acao.size && !F.Acao.has(String(l['A\u00e7\u00e3o']||''))) return false;
-    if (F.AvaliacaoAnalista.size && !F.AvaliacaoAnalista.has(String(l['Avalia\u00e7\u00e3o Analista']||''))) return false;
-    if (F.EQUIP_NUMBER && !String(l.EQUIP_NUMBER||'').toLowerCase().includes(F.EQUIP_NUMBER.toLowerCase())) return false;
-    if (F.TEXT_ID && !String(l.TEXT_ID||'').toLowerCase().includes(F.TEXT_ID.toLowerCase())) return false;
+    if (F.EQUIP_NUMBER.size && !F.EQUIP_NUMBER.has(String(l.EQUIP_NUMBER||''))) return false;
+    if (F.TEXT_ID.size && !F.TEXT_ID.has(String(l.TEXT_ID||''))) return false;
     for (const campo of ['SAMPLED_DATE','PROCESS_DATE','INTERP_DATE_TIME']) {
       const cfg = F[campo];
       if (cfg.de || cfg.ate) {
@@ -2940,9 +2948,72 @@ for (const linha of d.linhas) {
       return '<label><input type="checkbox" data-campo="' + campo + '" data-valor="' + safe.replace(/"/g,'&quot;') + '" ' + checked + '><span>' + safe + '</span></label>';
     }).join('') + '</div>';
   }
+  // ===== Dropdown multisseleção com busca (Filtros Avançados) =====
+  const MS_CAMPOS = ['EQUIP_NUMBER','OVERALL_INTERP','COMP_DESC','TEXT_ID'];
+  const MS_MAX_LISTA = 500;
+  let MS_TEMP = {}; let MS_VALORES = {}; let MS_VISIVEIS = {};
+  function msPrepararTemp(){
+    for (const c of MS_CAMPOS){ MS_TEMP[c] = new Set(FILTROS_AVANCADOS[c]); MS_VALORES[c] = valoresDistintos(c); MS_VISIVEIS[c] = []; }
+  }
+  function msRotulo(campo, v){
+    if (campo === 'OVERALL_INTERP'){ const cfg = _corOverall(v); if (cfg) return v + ' — ' + cfg.t; }
+    return v;
+  }
+  function msResumo(campo){
+    const sel = MS_TEMP[campo]; if (!sel || !sel.size) return 'Todos';
+    if (sel.size <= 2) return Array.from(sel).map(v => msRotulo(campo, v)).join(', ');
+    return sel.size + ' selecionado(s)';
+  }
+  function msDropdownHTML(campo, label){
+    return '<label>' + escapeHTML(label) + '</label>' +
+      '<div class="ms-wrap" id="ms-' + campo + '">' +
+        '<button type="button" class="ms-btn" onclick="msToggle(\'' + campo + '\')"><span id="ms-res-' + campo + '">' + escapeHTML(msResumo(campo)) + '</span><span>▾</span></button>' +
+        '<div class="ms-panel" id="ms-panel-' + campo + '" style="display:none;">' +
+          '<input type="text" class="ms-busca" id="ms-busca-' + campo + '" placeholder="🔍 Buscar..." oninput="msRenderLista(\'' + campo + '\')">' +
+          '<div class="ms-acoes"><a onclick="msMarcarVisiveis(\'' + campo + '\', true)">Marcar visíveis</a><a onclick="msMarcarVisiveis(\'' + campo + '\', false)">Limpar</a></div>' +
+          '<div class="ms-lista" id="ms-lista-' + campo + '"></div>' +
+        '</div>' +
+      '</div>';
+  }
+  function msToggle(campo){
+    const p = document.getElementById('ms-panel-' + campo); if (!p) return;
+    const abrir = p.style.display === 'none';
+    for (const c of MS_CAMPOS){ const o = document.getElementById('ms-panel-' + c); if (o) o.style.display = 'none'; }
+    if (abrir){ p.style.display = 'block'; msRenderLista(campo); const b = document.getElementById('ms-busca-' + campo); if (b) b.focus(); }
+  }
+  function msRenderLista(campo){
+    const lista = document.getElementById('ms-lista-' + campo); if (!lista) return;
+    const busca = (document.getElementById('ms-busca-' + campo).value || '').toLowerCase().trim();
+    const todos = MS_VALORES[campo] || [];
+    const filtrados = busca ? todos.filter(v => msRotulo(campo, v).toLowerCase().includes(busca)) : todos;
+    MS_VISIVEIS[campo] = filtrados;
+    const sel = MS_TEMP[campo];
+    const ordenados = filtrados.filter(v => sel.has(v)).concat(filtrados.filter(v => !sel.has(v)));
+    const exib = ordenados.slice(0, MS_MAX_LISTA);
+    let html = '';
+    if (!exib.length) html = '<div class="ms-vazio">Nenhum valor encontrado.</div>';
+    exib.forEach(v => {
+      const i = todos.indexOf(v);
+      html += '<label class="ms-item"><input type="checkbox" ' + (sel.has(v) ? 'checked' : '') + ' onchange="msCheck(\'' + campo + '\',' + i + ',this.checked)"><span>' + escapeHTML(msRotulo(campo, v)) + '</span></label>';
+    });
+    if (ordenados.length > MS_MAX_LISTA) html += '<div class="ms-vazio">Exibindo ' + MS_MAX_LISTA + ' de ' + ordenados.length + ' — refine a busca.</div>';
+    lista.innerHTML = html;
+  }
+  function msCheck(campo, i, marcado){
+    const v = MS_VALORES[campo][i]; if (v === undefined) return;
+    if (marcado) MS_TEMP[campo].add(v); else MS_TEMP[campo].delete(v);
+    msAtualizarResumo(campo);
+  }
+  function msMarcarVisiveis(campo, marcar){
+    if (marcar) (MS_VISIVEIS[campo] || []).forEach(v => MS_TEMP[campo].add(v));
+    else MS_TEMP[campo].clear();
+    msRenderLista(campo); msAtualizarResumo(campo);
+  }
+  function msAtualizarResumo(campo){ const r = document.getElementById('ms-res-' + campo); if (r) r.textContent = msResumo(campo); }
   function abrirModalFiltros() {
     const body = document.getElementById('modalFiltrosBody');
     const F = FILTROS_AVANCADOS;
+    msPrepararTemp();
     body.innerHTML =
       '<div class="filtros-secao"><div class="filtros-titulo">📌 Status do Controle</div><div style="display:flex; gap:12px; font-size:13px;">' +
         '<label><input type="radio" name="fStatus" value="TODOS" ' + (F.STATUS==='TODOS'?'checked':'') + '> Todos</label>' +
@@ -2950,33 +3021,29 @@ for (const linha of d.linhas) {
         '<label><input type="radio" name="fStatus" value="SEM" ' + (F.STATUS==='SEM'?'checked':'') + '> \u26A0\ufe0f Sem controle</label>' +
       '</div></div>' +
       '<div class="filtros-secao"><div class="filtros-titulo">Base Laudos</div><div class="form-grid">' +
-        '<div class="form-row"><label>TEXT_ID cont\u00e9m</label><input type="text" id="fEqTextId" value="' + escapeHTML(F.TEXT_ID) + '"></div>' +
-        '<div class="form-row"><label>EQUIP_NUMBER cont\u00e9m</label><input type="text" id="fEqEquip" value="' + escapeHTML(F.EQUIP_NUMBER) + '"></div>' +
-      '</div>' +
-      '<div class="form-row" style="margin-top:8px;"><label>OVERALL_INTERP</label>' + checkboxesHTML('OVERALL_INTERP', valoresDistintos('OVERALL_INTERP'), F.OVERALL_INTERP) + '</div>' +
-      '<div class="form-row" style="margin-top:8px;"><label>COMP_DESC</label>' + checkboxesHTML('COMP_DESC', valoresDistintos('COMP_DESC'), F.COMP_DESC) + '</div></div>' +
+        '<div class="form-row">' + msDropdownHTML('EQUIP_NUMBER','EQUIP_NUMBER') + '</div>' +
+        '<div class="form-row">' + msDropdownHTML('OVERALL_INTERP','OVERALL_INTERP') + '</div>' +
+        '<div class="form-row">' + msDropdownHTML('COMP_DESC','COMP_DESC') + '</div>' +
+        '<div class="form-row">' + msDropdownHTML('TEXT_ID','TEXT_ID') + '</div>' +
+      '</div></div>' +
       '<div class="filtros-secao"><div class="filtros-titulo">Datas</div>' +
         '<div class="form-row"><label>SAMPLED_DATE</label><div class="filtros-data">De <input type="date" id="fSampDe" value="' + (F.SAMPLED_DATE.de||'') + '"> At\u00e9 <input type="date" id="fSampAte" value="' + (F.SAMPLED_DATE.ate||'') + '"></div></div>' +
         '<div class="form-row" style="margin-top:6px;"><label>PROCESS_DATE</label><div class="filtros-data">De <input type="date" id="fProcDe" value="' + (F.PROCESS_DATE.de||'') + '"> At\u00e9 <input type="date" id="fProcAte" value="' + (F.PROCESS_DATE.ate||'') + '"></div></div>' +
         '<div class="form-row" style="margin-top:6px;"><label>INTERP_DATE_TIME</label><div class="filtros-data">De <input type="date" id="fIntDe" value="' + (F.INTERP_DATE_TIME.de||'') + '"> At\u00e9 <input type="date" id="fIntAte" value="' + (F.INTERP_DATE_TIME.ate||'') + '"></div></div>' +
-      '</div>' +
-      '<div class="filtros-secao"><div class="filtros-titulo">Controle</div>' +
-        '<div class="form-row"><label>A\u00e7\u00e3o</label>' + checkboxesHTML('Acao', valoresDistintos('A\u00e7\u00e3o'), F.Acao) + '</div>' +
-        '<div class="form-row" style="margin-top:8px;"><label>Avalia\u00e7\u00e3o Analista</label>' + checkboxesHTML('AvaliacaoAnalista', valoresDistintos('Avalia\u00e7\u00e3o Analista'), F.AvaliacaoAnalista) + '</div>' +
       '</div>';
+
     document.getElementById('modalFiltros').classList.add('show');
   }
   function fecharModalFiltros() { document.getElementById('modalFiltros').classList.remove('show'); }
   function aplicarFiltrosAvancados() {
     const F = FILTROS_AVANCADOS;
     F.STATUS = document.querySelector('input[name="fStatus"]:checked').value;
-    F.TEXT_ID = document.getElementById('fEqTextId').value.trim();
-    F.EQUIP_NUMBER = document.getElementById('fEqEquip').value.trim();
+    for (const c of MS_CAMPOS) { F[c] = new Set(MS_TEMP[c] || []); }
     F.SAMPLED_DATE = { de: document.getElementById('fSampDe').value, ate: document.getElementById('fSampAte').value };
     F.PROCESS_DATE = { de: document.getElementById('fProcDe').value, ate: document.getElementById('fProcAte').value };
     F.INTERP_DATE_TIME = { de: document.getElementById('fIntDe').value, ate: document.getElementById('fIntAte').value };
-    F.OVERALL_INTERP.clear(); F.COMP_DESC.clear(); F.Acao.clear(); F.AvaliacaoAnalista.clear();
-    document.querySelectorAll('#modalFiltrosBody input[type=checkbox]').forEach(cb => {
+    F.Acao.clear(); F.AvaliacaoAnalista.clear();
+    document.querySelectorAll('#modalFiltrosBody .filtros-checkboxes input[type=checkbox]').forEach(cb => {
       if (!cb.checked) return;
       const campo = cb.dataset.campo; const valor = cb.dataset.valor;
       if (F[campo] && F[campo] instanceof Set) F[campo].add(valor);
@@ -2987,7 +3054,7 @@ for (const linha of d.linhas) {
   function limparFiltrosAvancados() {
     FILTROS_AVANCADOS.OVERALL_INTERP.clear(); FILTROS_AVANCADOS.COMP_DESC.clear();
     FILTROS_AVANCADOS.Acao.clear(); FILTROS_AVANCADOS.AvaliacaoAnalista.clear();
-    FILTROS_AVANCADOS.EQUIP_NUMBER = ''; FILTROS_AVANCADOS.TEXT_ID = '';
+    FILTROS_AVANCADOS.EQUIP_NUMBER = new Set(); FILTROS_AVANCADOS.TEXT_ID = new Set();
     FILTROS_AVANCADOS.SAMPLED_DATE = { de:'', ate:'' }; FILTROS_AVANCADOS.PROCESS_DATE = { de:'', ate:'' }; FILTROS_AVANCADOS.INTERP_DATE_TIME = { de:'', ate:'' };
     FILTROS_AVANCADOS.STATUS = 'TODOS';
     abrirModalFiltros();

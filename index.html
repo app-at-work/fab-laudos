@@ -2953,7 +2953,48 @@ for (const linha of d.linhas) {
   const MS_MAX_LISTA = 500;
   let MS_TEMP = {}; let MS_VALORES = {}; let MS_VISIVEIS = {};
   function msPrepararTemp(){
-    for (const c of MS_CAMPOS){ MS_TEMP[c] = new Set(FILTROS_AVANCADOS[c]); MS_VALORES[c] = valoresDistintos(c); MS_VISIVEIS[c] = []; }
+    for (const c of MS_CAMPOS){ MS_TEMP[c] = new Set(FILTROS_AVANCADOS[c]); MS_VALORES[c] = msValoresDisponiveis(c); MS_VISIVEIS[c] = []; }
+  }
+  // Cascata: valores disponiveis de um campo = linhas que atendem as selecoes dos OUTROS 3 campos
+  function msValoresDisponiveis(campo){
+    const outros = MS_CAMPOS.filter(c => c !== campo && MS_TEMP[c] && MS_TEMP[c].size);
+    const set = new Set();
+    for (const l of (DADOS_CONTROLE_ANALISE.linhas || [])){
+      let ok = true;
+      for (const c of outros){ if (!MS_TEMP[c].has(String(l[c] == null ? '' : l[c]))) { ok = false; break; } }
+      if (!ok) continue;
+      const v = l[campo]; if (v !== undefined && v !== null && v !== '') set.add(String(v));
+    }
+    // mantem visiveis os ja selecionados, mesmo que fiquem fora da cascata
+    if (MS_TEMP[campo]) MS_TEMP[campo].forEach(v => set.add(v));
+    return Array.from(set).sort((a,b) => a.localeCompare(b));
+  }
+  function msEhValido(campo, v){
+    const outros = MS_CAMPOS.filter(c => c !== campo && MS_TEMP[c] && MS_TEMP[c].size);
+    for (const l of (DADOS_CONTROLE_ANALISE.linhas || [])){
+      if (String(l[campo] == null ? '' : l[campo]) !== v) continue;
+      let ok = true;
+      for (const c of outros){ if (!MS_TEMP[c].has(String(l[c] == null ? '' : l[c]))) { ok = false; break; } }
+      if (ok) return true;
+    }
+    return false;
+  }
+  // Ao mudar uma selecao: remove dos outros campos os valores que deixaram de existir
+  function msCascata(origem){
+    let mudou = true, guarda = 0;
+    while (mudou && guarda++ < 5){
+      mudou = false;
+      for (const c of MS_CAMPOS){
+        if (c === origem || !MS_TEMP[c].size) continue;
+        for (const v of Array.from(MS_TEMP[c])){ if (!msEhValido(c, v)) { MS_TEMP[c].delete(v); mudou = true; } }
+      }
+    }
+    for (const c of MS_CAMPOS){
+      MS_VALORES[c] = msValoresDisponiveis(c);
+      msAtualizarResumo(c);
+      const pnl = document.getElementById('ms-panel-' + c);
+      if (pnl && pnl.style.display !== 'none') msRenderLista(c);
+    }
   }
   function msRotulo(campo, v){
     if (campo === 'OVERALL_INTERP'){ const cfg = _corOverall(v); if (cfg) return v + ' — ' + cfg.t; }
@@ -2984,6 +3025,7 @@ for (const linha of d.linhas) {
   function msRenderLista(campo){
     const lista = document.getElementById('ms-lista-' + campo); if (!lista) return;
     const busca = (document.getElementById('ms-busca-' + campo).value || '').toLowerCase().trim();
+    MS_VALORES[campo] = msValoresDisponiveis(campo);
     const todos = MS_VALORES[campo] || [];
     const filtrados = busca ? todos.filter(v => msRotulo(campo, v).toLowerCase().includes(busca)) : todos;
     MS_VISIVEIS[campo] = filtrados;
@@ -3002,12 +3044,12 @@ for (const linha of d.linhas) {
   function msCheck(campo, i, marcado){
     const v = MS_VALORES[campo][i]; if (v === undefined) return;
     if (marcado) MS_TEMP[campo].add(v); else MS_TEMP[campo].delete(v);
-    msAtualizarResumo(campo);
+    msCascata(campo);
   }
   function msMarcarVisiveis(campo, marcar){
     if (marcar) (MS_VISIVEIS[campo] || []).forEach(v => MS_TEMP[campo].add(v));
     else MS_TEMP[campo].clear();
-    msRenderLista(campo); msAtualizarResumo(campo);
+    msCascata(campo); msRenderLista(campo);
   }
   function msAtualizarResumo(campo){ const r = document.getElementById('ms-res-' + campo); if (r) r.textContent = msResumo(campo); }
   function abrirModalFiltros() {

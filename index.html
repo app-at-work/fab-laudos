@@ -1608,13 +1608,20 @@ Requisitos: Chrome ou Edge 86+</pre>`;
     return idx;
   }
   // Desenha 5 bolinhas: mais recente à DIREITA, mais antiga à esquerda.
-  // O laudo da propria linha (textIdLinha) NAO entra na logica.
-  function bolinhas5HTML(equip, comp, idx, textIdLinha){
+  // Considera APENAS laudos com data usada ANTERIOR à data usada da amostra da linha.
+  // Data usada: SAMPLED_DATE -> PROCESS_DATE -> INTERP_DATE_TIME
+  function bolinhas5HTML(equip, comp, idx, textIdLinha, dataLinha){
     const key = _chaveEquipComp(equip, comp);
     const tidLinha = normalizarChave(textIdLinha);
+    const tRef = (dataLinha instanceof Date && !isNaN(dataLinha)) ? dataLinha.getTime() : null;
     let arr = (idx && idx.has(key)) ? idx.get(key) : [];
-    arr = arr.filter(function(it){ return it.textId !== tidLinha; });
-    const ultimos5 = arr.slice(0,5);
+    arr = arr.filter(function(it){
+      if (it.textId === tidLinha) return false;   // ignora o proprio laudo
+      if (tRef === null) return false;            // linha sem data: sem historico
+      if (it.t === -Infinity) return false;       // laudo sem data: ignora
+      return it.t < tRef;                         // somente anteriores a amostra
+    });
+    const ultimos5 = arr.slice(0,5);              // arr ja vem em ordem decrescente
     const ordemVisual = ultimos5.slice().reverse();
     const nVazias = 5 - ordemVisual.length;
     let out = '<span style="display:inline-flex; gap:3px; align-items:center;">';
@@ -2744,7 +2751,8 @@ for (const linha of d.linhas) {
         const amostraKey = String(linha['TEXT_ID']||'').replace(/'/g,"\\'");
         const __rowUid = (linha['__uid'] !== undefined && linha['__uid'] !== null) ? String(linha['__uid']) : '';
         tblHtml += '<tr ondblclick="abrirModalRegistroEdicao(\'' + __rowUid.replace(/'/g,"\\'") + '\', \'' + amostraKey + '\')">';
-        tblHtml += '<td style="text-align:center; white-space:nowrap;">' + bolinhas5HTML(linha['EQUIP_NUMBER'], linha['COMP_DESC'], HIST5_INDEX, linha['TEXT_ID']) + '</td>';
+        const _dRefLinha = parseDataFlex(linha['SAMPLED_DATE']) || parseDataFlex(linha['PROCESS_DATE']) || parseDataFlex(linha['INTERP_DATE_TIME']);
+        tblHtml += '<td style="text-align:center; white-space:nowrap;">' + bolinhas5HTML(linha['EQUIP_NUMBER'], linha['COMP_DESC'], HIST5_INDEX, linha['TEXT_ID'], _dRefLinha) + '</td>';
         colunas.forEach(c => {
           const val = linha[c] !== undefined ? linha[c] : '';
           let extra = '';

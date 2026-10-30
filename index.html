@@ -181,6 +181,7 @@
   }
   .origem-BACKLOG_EQ     { background:#8b4513; }
   .origem-BASE           { background:#1565c0; }
+  .origem-ARREF          { background:#00838f; }
   .origem-CONTROLE       { background:var(--teal); }
   .origem-BACKLOG        { background:#a0522d; }
   .origem-BACKLOG_PLANOS { background:#b8860b; }
@@ -389,6 +390,48 @@
   @keyframes pulseAmareloLinha { 0%,100% { background-color:#fff9c4; } 50% { background-color:#fff176; } }
   .row-pendente-anterior td { animation: pulseAmareloLinha 1.4s ease-in-out infinite; }
   .row-pendente-anterior:hover td { animation:none; background-color:#ffe082 !important; }
+  /* ===== Analise de Tendencia ===== */
+  .tend-card { background:#fff; border:1px solid var(--border); border-radius:8px; margin-bottom:10px; overflow:hidden; }
+  .tend-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 14px; cursor:pointer; background:var(--bg-panel); user-select:none; }
+  .tend-head:hover { background:var(--teal-light); }
+  .tend-card.open .tend-head { border-bottom:1px solid var(--border); }
+  .tend-caret { color:var(--teal); font-size:10px; width:12px; display:inline-block; transition:transform .15s; }
+  .tend-card.open .tend-caret { transform:rotate(90deg); }
+  .tend-title { font-weight:700; color:var(--teal); font-size:14px; }
+  .tend-meta { color:var(--text-soft); font-size:12px; }
+  .tend-pill { display:inline-block; min-width:24px; text-align:center; padding:1px 8px; border-radius:10px; font-size:11px; font-weight:700; }
+  .tend-b { display:inline-block; padding:2px 10px; border-radius:12px; font-size:11px; font-weight:600; color:#fff; white-space:nowrap; }
+  .tend-content { padding:12px 14px; }
+  .tend-table { border-collapse:collapse; width:100%; min-width:1040px; font-size:12px; }
+  .tend-table th { background:var(--teal); color:#fff; padding:7px 10px; text-align:center; font-weight:600; white-space:nowrap; border:1px solid rgba(255,255,255,0.25); }
+  .tend-table th.tend-sub { font-size:11px; padding:4px 8px; }
+  .tend-table td { padding:6px 10px; border-bottom:1px solid var(--border); text-align:center; white-space:nowrap; }
+  .tend-table td.tend-num { font-variant-numeric:tabular-nums; }
+  .tend-table td.tend-na { color:var(--text-muted); }
+  .tend-table td.tend-regra { color:var(--text-soft); font-size:11px; }
+  .tend-table td.tend-pior { font-weight:800; color:#b71c1c; }
+  .tend-table tr.tend-row-vazio td { background:#fafafa; }
+  .tend-row { cursor:pointer; }
+  .tend-row:hover td { background:var(--teal-light); }
+  .tend-row.tend-row-open td { background:var(--teal-light); }
+  .tend-chart-cell { padding:10px 12px !important; background:#fcfdfd; white-space:normal !important; text-align:left !important; }
+  .tend-chartbox { max-width:900px; }
+  .tend-chip { display:inline-block; border:1px solid; border-radius:12px; padding:1px 9px; font-size:11px; background:#fff; }
+  .tend-eq .ms-panel { position:absolute; z-index:60; width:320px; top:100%; left:0; }
+  .tend-field > label { display:block; font-size:11px; color:var(--text-soft); font-weight:600; margin-bottom:2px; }
+  .tend-field select, .tend-field input[type=text].tend-input, .tend-field input[type=date].tend-input { padding:8px 10px; border:1px solid var(--border); border-radius:4px; font-size:13px; background:#fff; color:var(--text); }
+  .tend-btn-graf { background:#fff; color:var(--teal); border:1px solid var(--teal); border-radius:14px; padding:2px 10px; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap; }
+  .tend-btn-graf:hover { background:var(--teal); color:#fff; }
+  .tend-leg-chip { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--border); border-radius:14px; padding:2px 10px; font-size:12px; background:#fff; cursor:pointer; user-select:none; }
+  .tend-leg-chip:hover { border-color:var(--teal); }
+  .tend-leg-chip.off { opacity:0.4; text-decoration:line-through; }
+  .tend-leg-dot { width:11px; height:11px; border-radius:50%; display:inline-block; }
+  .tend-inter { margin-top:14px; border:1px solid var(--border); border-left:4px solid var(--teal); border-radius:8px; padding:10px 14px; background:#fcfefe; }
+  .tend-inter-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:2px; }
+  .tend-inter-title { font-weight:700; color:var(--teal); font-size:13px; }
+  .tend-matriz { border-collapse:collapse; font-size:12px; }
+  .tend-matriz th { background:var(--bg-panel); color:var(--text); padding:4px 10px; font-weight:700; border:1px solid var(--border); text-align:center; }
+  .tend-matriz td { padding:5px 10px; border:1px solid var(--border); text-align:center; min-width:46px; font-variant-numeric:tabular-nums; }
 </style>
 </head>
 <body>
@@ -420,6 +463,7 @@
         <li class="child2" id="menu-BACKLOG_PLANOS" onclick="mudarSubAba('BACKLOG_PLANOS')"><span class="icon">📋</span><span class="txt">Backlog Planos</span><span class="badge" id="badge-BACKLOG_PLANOS">0</span></li>
         <li class="child2" id="menu-NOTAS" onclick="mudarSubAba('NOTAS')"><span class="icon">📝</span><span class="txt">Notas</span><span class="badge" id="badge-NOTAS">0</span></li>
         <li id="menu-BASE" onclick="mudarAba('BASE')"><span class="icon">🗄️</span><span class="txt">Base Laudos</span><span class="badge" id="badge-BASE">0</span></li>
+        <li id="menu-ARREF" onclick="mudarAba('ARREF')"><span class="icon">🧊</span><span class="txt">Base Arrefecimento</span><span class="badge" id="badge-ARREF">0</span></li>
         <li id="menu-CONTROLE" onclick="mudarAba('CONTROLE')"><span class="icon">📊</span><span class="txt">Controle Laudos</span><span class="badge" id="badge-CONTROLE">0</span></li>
       </ul>
     </li>
@@ -430,6 +474,7 @@
         <li id="dmenu-BACKLOG_PLANOS" onclick="mudarTelaDados('BACKLOG_PLANOS')"><span class="icon">📋</span><span class="txt">Backlog Planos</span><span class="badge" id="dbadge-BACKLOG_PLANOS">0</span></li>
         <li id="dmenu-NOTAS" onclick="mudarTelaDados('NOTAS')"><span class="icon">📝</span><span class="txt">Notas</span><span class="badge" id="dbadge-NOTAS">0</span></li>
         <li id="dmenu-BASE" onclick="mudarTelaDados('BASE')"><span class="icon">🗄️</span><span class="txt">Base Laudos</span><span class="badge" id="dbadge-BASE">0</span></li>
+        <li id="dmenu-ARREF" onclick="mudarTelaDados('ARREF')"><span class="icon">🧊</span><span class="txt">Base Arrefecimento</span><span class="badge" id="dbadge-ARREF">0</span></li>
         <li id="dmenu-CONTROLE" onclick="mudarTelaDados('CONTROLE')"><span class="icon">📊</span><span class="txt">Controle Laudos</span><span class="badge" id="dbadge-CONTROLE">0</span></li>
       </ul>
     </li>
@@ -438,6 +483,7 @@
       <ul class="submenu">
         <li id="cmenu-CONTROLE_ANALISE" onclick="mudarTelaControle('CONTROLE_ANALISE')"><span class="icon">📋</span><span class="txt">Controle Análise</span><span class="badge" id="cbadge-CONTROLE_ANALISE">0</span></li>
         <li id="cmenu-MONITORAMENTO" onclick="mudarTelaMonitoramento()"><span class="icon">📊</span><span class="txt">Monitoramento Laudos</span><span class="badge" id="cbadge-MONITORAMENTO">0</span></li>
+        <li id="cmenu-TENDENCIA" onclick="mudarTelaTendencia()"><span class="icon">📈</span><span class="txt">Análise de Tendência</span></li>
         <li id="cmenu-RELATORIO" onclick="mudarTelaRelatorio()" style="display:none;"><span class="icon">📈</span><span class="txt">Relatório</span></li>
       </ul>
     </li>
@@ -474,6 +520,11 @@
         <div class="valor" id="valor-BASE">0</div>
         <div class="sub" id="sub-BASE">arquivos</div>
       </div>
+      <div class="card" id="card-ARREF">
+        <div class="titulo">🧊 Base Arrefecimento</div>
+        <div class="valor" id="valor-ARREF">0</div>
+        <div class="sub" id="sub-ARREF">arquivos</div>
+      </div>
       <div class="card" id="card-CONTROLE">
         <div class="titulo">📊 Controle Laudos</div>
         <div class="valor" id="valor-CONTROLE">0</div>
@@ -485,6 +536,7 @@
       <div class="tab active" onclick="mudarAba('TODOS')" data-aba="TODOS">📋 Todos <span class="count" id="count-TODOS">0</span></div>
       <div class="tab" onclick="mudarAba('BACKLOG_EQ')" data-aba="BACKLOG_EQ">🛠️ Backlog Equipamentos <span class="count" id="count-BACKLOG_EQ">0</span></div>
       <div class="tab" onclick="mudarAba('BASE')" data-aba="BASE">🗄️ Base Laudos <span class="count" id="count-BASE">0</span></div>
+      <div class="tab" onclick="mudarAba('ARREF')" data-aba="ARREF">🧊 Base Arrefecimento <span class="count" id="count-ARREF">0</span></div>
       <div class="tab" onclick="mudarAba('CONTROLE')" data-aba="CONTROLE">📊 Controle Laudos <span class="count" id="count-CONTROLE">0</span></div>
     </div>
 
@@ -527,6 +579,7 @@
       <div class="tab" onclick="mudarTelaDados('BACKLOG_PLANOS')" data-tela="BACKLOG_PLANOS">📋 Backlog Planos <span class="count" id="dcount-BACKLOG_PLANOS">0</span></div>
       <div class="tab" onclick="mudarTelaDados('NOTAS')" data-tela="NOTAS">📝 Notas <span class="count" id="dcount-NOTAS">0</span></div>
       <div class="tab" onclick="mudarTelaDados('BASE')" data-tela="BASE">🗄️ Base Laudos <span class="count" id="dcount-BASE">0</span></div>
+      <div class="tab" onclick="mudarTelaDados('ARREF')" data-tela="ARREF">🧊 Base Arrefecimento <span class="count" id="dcount-ARREF">0</span></div>
       <div class="tab" onclick="mudarTelaDados('CONTROLE')" data-tela="CONTROLE">📊 Controle Laudos <span class="count" id="dcount-CONTROLE">0</span></div>
     </div>
 
@@ -612,6 +665,92 @@
     </div>
     <div id="monBody" style="flex:1; overflow:auto; padding:16px 25px; background:var(--bg);">
       <div class="dados-placeholder"><div class="big">📊</div><h3>Monitoramento Laudos</h3><p>Selecione uma pasta raiz para gerar o dashboard de registros por período e status de controle.</p></div>
+    </div>
+  </div>
+  <!-- MODO ANALISE DE TENDENCIA -->
+  <div id="modoTendencia" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+    <div class="dados-header">
+      <h2>📈 Análise de Tendência por Componente</h2>
+      <div class="dados-stats" id="tendStats"></div>
+      <div class="dados-actions">
+        <button class="btn secondary" onclick="recarregarTendencia()">🔄 Recarregar</button>
+      </div>
+    </div>
+    <div class="dados-toolbar" id="tendToolbar" style="display:none; align-items:flex-end; flex-wrap:wrap; gap:14px;">
+      <div class="tend-field">
+        <label>Tipo de laudo (pasta)</label>
+        <select id="tendTipo" onchange="tendSetTipo(this.value)">
+          <option value="TODOS">Todos</option>
+          <option value="OLEO">Óleo</option>
+          <option value="ARREF">Arrefecimento</option>
+        </select>
+      </div>
+      <div class="tend-field tend-eq" id="tendMs-MODEL" style="position:relative; min-width:230px;">
+        <label>Modelo (MODEL)</label>
+        <div class="ms-wrap">
+          <button type="button" class="ms-btn" onclick="tendMsToggle('MODEL')"><span id="tendMsRes-MODEL">Todos os modelos</span><span>▾</span></button>
+          <div class="ms-panel" id="tendMsPanel-MODEL" style="display:none;">
+            <input type="text" class="ms-busca" id="tendMsBusca-MODEL" placeholder="🔎 Buscar modelo..." oninput="tendMsRenderLista('MODEL')">
+            <div class="ms-acoes"><a onclick="tendMsMarcar('MODEL', true)">Marcar visíveis</a><a onclick="tendMsMarcar('MODEL', false)">Limpar (todos)</a></div>
+            <div class="ms-lista" id="tendMsLista-MODEL"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tend-field tend-eq" id="tendMs-EQUIP" style="position:relative; min-width:250px;">
+        <label>Equipamento (EQUIP_NUMBER)</label>
+        <div class="ms-wrap">
+          <button type="button" class="ms-btn" onclick="tendMsToggle('EQUIP')"><span id="tendMsRes-EQUIP">Todos os equipamentos</span><span>▾</span></button>
+          <div class="ms-panel" id="tendMsPanel-EQUIP" style="display:none;">
+            <input type="text" class="ms-busca" id="tendMsBusca-EQUIP" placeholder="🔎 Buscar equipamento..." oninput="tendMsRenderLista('EQUIP')">
+            <div class="ms-acoes"><a onclick="tendMsMarcar('EQUIP', true)">Marcar visíveis</a><a onclick="tendMsMarcar('EQUIP', false)">Limpar (todos)</a></div>
+            <div class="ms-lista" id="tendMsLista-EQUIP"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tend-field tend-eq" id="tendMs-COMP" style="position:relative; min-width:270px;">
+        <label>Componente (COMP_DESC)</label>
+        <div class="ms-wrap">
+          <button type="button" class="ms-btn" onclick="tendMsToggle('COMP')"><span id="tendMsRes-COMP">Todos os componentes</span><span>▾</span></button>
+          <div class="ms-panel" id="tendMsPanel-COMP" style="display:none;">
+            <input type="text" class="ms-busca" id="tendMsBusca-COMP" placeholder="🔎 Buscar componente..." oninput="tendMsRenderLista('COMP')">
+            <div class="ms-acoes"><a onclick="tendMsMarcar('COMP', true)">Marcar visíveis</a><a onclick="tendMsMarcar('COMP', false)">Limpar (todos)</a></div>
+            <div class="ms-lista" id="tendMsLista-COMP"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tend-field">
+        <label>Sensibilidade da tendência</label>
+        <select id="tendLimiar" onchange="tendSetLimiar(this.value)">
+          <option value="5">Alta (±5%)</option>
+          <option value="10" selected>Média (±10%)</option>
+          <option value="20">Baixa (±20%)</option>
+        </select>
+      </div>
+      <button type="button" class="btn ghost" onclick="tendLimparFiltros()" style="margin-bottom:1px;">✖ Limpar filtros</button>
+      <span style="font-size:12px; color:var(--text-soft); padding-bottom:9px;" id="tendFiltroInfo"></span>
+    </div>
+    <div id="tendBody" style="flex:1; overflow:auto; padding:16px 25px; background:var(--bg);">
+      <div class="dados-placeholder"><div class="big">📈</div><h3>Análise de Tendência</h3><p>Selecione uma pasta raiz para analisar a evolução dos elementos por componente.</p></div>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="modalTendGrafico" style="z-index:10000;">
+    <div class="modal-box" style="width:1120px; max-width:96vw; height:90vh;">
+      <div class="modal-header"><h3 id="tendModalTitulo">📈 Tendência por INTERP_DATE_TIME</h3><button class="modal-close" onclick="tendFecharGrafico()">✕</button></div>
+      <div class="modal-body" style="overflow:auto;">
+        <div style="display:flex; gap:14px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px;">
+          <div class="tend-field"><label>Parâmetro</label><select id="tendModalParam" onchange="tendModalMudarParam()" style="max-width:340px;"></select></div>
+          <div class="tend-field" id="tendModalEqWrap" style="display:none;"><label>Equipamento</label><select id="tendModalEq" onchange="tendModalMudarEq()"></select></div>
+          <div class="tend-field"><label>INTERP_DATE_TIME — de</label><input type="date" class="tend-input" id="tendModalDe" onchange="tendModalRender()"></div>
+          <div class="tend-field"><label>até</label><input type="date" class="tend-input" id="tendModalAte" onchange="tendModalRender()"></div>
+          <button type="button" class="btn ghost" onclick="tendModalLimparPeriodo()" style="margin-bottom:1px;">Limpar período</button>
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-soft); padding-bottom:9px; cursor:pointer;"><input type="checkbox" id="tendModalTend" checked onchange="tendModalRender()"> Mostrar linha de tendência</label>
+        </div>
+        <div id="tendModalLegenda" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px;"></div>
+        <div style="font-size:12px; color:var(--text-soft); margin-bottom:8px;" id="tendModalInfo"></div>
+        <div id="tendModalChart" style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:8px;"></div>
+        <div id="tendModalNota" style="display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--text-soft); margin-top:8px; align-items:center;"></div>
+      </div>
+      <div class="modal-footer"><button class="btn secondary" onclick="tendFecharGrafico()">Fechar</button></div>
     </div>
   </div>
   <div class="modal-backdrop" id="modalRegistro">
@@ -778,6 +917,7 @@
       outros: []
     },
     BASE:     { nome:'Laudos Óleo SOS', icone:'🗄️', handle:null, encontrada:false, nomeReal:'', arquivos:[] },
+    ARREF:    { nome:'Laudos Arrefecimento SOS', icone:'🧊', handle:null, encontrada:false, nomeReal:'', arquivos:[] },
     CONTROLE: { nome:'CONTROLE LAUDOS', icone:'📊', handle:null, encontrada:false, nomeReal:'', arquivos:[] }
   };
 
@@ -787,19 +927,21 @@
     BACKLOG_PLANOS: { colunas:[], linhas:[], carregado:false, erros:[] },
     NOTAS:          { colunas:[], linhas:[], carregado:false, erros:[] },
     BASE:           { colunas:[], linhas:[], carregado:false, erros:[] },
+    ARREF:          { colunas:[], linhas:[], carregado:false, erros:[] },
     CONTROLE:       { colunas:[], linhas:[], carregado:false, erros:[] }
   };
   const DADOS_CONTROLE_ANALISE = { colunas:[], linhas:[], carregado:false, erros:[], _amostrasUnicas:0 };
   const COLUNAS_BASE_LAUDOS = ['OVERALL_INTERP','INTERP_DATE_TIME','PROCESS_DATE','SAMPLED_DATE','EQUIP_NUMBER','COMP_DESC','TEXT_ID','INTERPRETATION_TEXT'];
   const COLUNAS_CONTROLE    = ['Ação','Nota/Ordem','Avaliação Analista','Observação','Comentário'];
   const COLUNA_STATUS       = '📌 Status Controle';
+  const COLUNA_TIPO         = 'TIPO_LAUDO';   // 'Óleo' | 'Arrefecimento' (origem do laudo)
   const CONTROLE_INDEX = new Map();
   let filtroSomenteSemControle = false;
   let CONTROLE_JSON_FILE_HANDLE = null; let CONTROLE_JSON_DATA = null; let CONTROLE_JSON_ARQ = null;
   let EDITANDO_AMOSTRA = null; let EDITANDO_IDX = -1; let EDITANDO_UID = null; let CONTROLE_FLAT = [];
   function _novoId(){ try { if (crypto && crypto.randomUUID) return crypto.randomUUID(); } catch(e){} return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,10); }
   let LINHAS_FILTRADAS_CACHE = []; let IMPORT_REGISTROS_VALIDOS = [];
-  const FILTROS_AVANCADOS = { OVERALL_INTERP: new Set(), COMP_DESC: new Set(), Acao: new Set(), AvaliacaoAnalista: new Set(), EQUIP_NUMBER: new Set(), TEXT_ID: new Set(), SAMPLED_DATE: { de:'', ate:'' }, PROCESS_DATE: { de:'', ate:'' }, INTERP_DATE_TIME: { de:'', ate:'' }, STATUS: 'TODOS' };
+  const FILTROS_AVANCADOS = { OVERALL_INTERP: new Set(), COMP_DESC: new Set(), Acao: new Set(), AvaliacaoAnalista: new Set(), EQUIP_NUMBER: new Set(), TEXT_ID: new Set(), TIPO_LAUDO: new Set(), SAMPLED_DATE: { de:'', ate:'' }, PROCESS_DATE: { de:'', ate:'' }, INTERP_DATE_TIME: { de:'', ate:'' }, STATUS: 'TODOS' };
 
   let diretorioHandle = null;
   let ATIVIDADES_HANDLE = null;
@@ -834,7 +976,7 @@
     const c = document.getElementById('menu-modo-CONTROLE_MODO');
     if (a) a.classList.toggle('active', modoAtual === 'ARQUIVOS');
     if (d) d.classList.toggle('active', modoAtual === 'DADOS');
-    if (c) c.classList.toggle('active', modoAtual === 'CONTROLE_ANALISE' || modoAtual === 'RELATORIO' || modoAtual === 'MONITORAMENTO');
+    if (c) c.classList.toggle('active', modoAtual === 'CONTROLE_ANALISE' || modoAtual === 'RELATORIO' || modoAtual === 'MONITORAMENTO' || modoAtual === 'TENDENCIA');
   }
   function mudarModo(modo) {
     modoAtual = modo;
@@ -846,6 +988,8 @@
     if (mr) mr.style.display = (modo==='RELATORIO') ? 'flex' : 'none';
     const mm = document.getElementById('modoMonitoramento');
     if (mm) mm.style.display = (modo==='MONITORAMENTO') ? 'flex' : 'none';
+    const mt = document.getElementById('modoTendencia');
+    if (mt) mt.style.display = (modo==='TENDENCIA') ? 'flex' : 'none';
     atualizarMenuAtivo();
   }
 
@@ -929,11 +1073,13 @@
       sp.handle = null; sp.arquivos = []; sp.encontrada = false; sp.nomeReal = '';
     });
     ESTRUTURA.BASE.handle = null; ESTRUTURA.BASE.encontrada = false; ESTRUTURA.BASE.arquivos = [];
+    ESTRUTURA.ARREF.handle = null; ESTRUTURA.ARREF.encontrada = false; ESTRUTURA.ARREF.arquivos = [];
     ESTRUTURA.CONTROLE.handle = null; ESTRUTURA.CONTROLE.encontrada = false; ESTRUTURA.CONTROLE.arquivos = [];
 
     const mapaRaiz = {
       [normalizar('BACKLOG EQUIPAMENTOS')]: 'BACKLOG_EQ',
       [normalizar('Laudos Óleo SOS')]:      'BASE',
+      [normalizar('Laudos Arrefecimento SOS')]: 'ARREF',
       [normalizar('CONTROLE LAUDOS')]:      'CONTROLE'
     };
 
@@ -949,12 +1095,12 @@
         }
       }
 
-      for (const chave of ['BASE','CONTROLE']) {
+      for (const chave of ['BASE','ARREF','CONTROLE']) {
         const sp = ESTRUTURA[chave];
         if (!sp.handle) continue;
         for await (const entry of sp.handle.values()) {
           if (entry.kind === 'file') {
-            if (chave === 'BASE' && obterExtensao(entry.name) !== 'txt') continue;
+            if ((chave === 'BASE' || chave === 'ARREF') && obterExtensao(entry.name) !== 'txt') continue;
             const file = await entry.getFile();
             sp.arquivos.push({
               nome:file.name, tipo:obterExtensao(file.name), tamanho:file.size,
@@ -1007,6 +1153,7 @@
       const faltando = [];
       if (!ESTRUTURA.BACKLOG_EQ.encontrada) faltando.push('BACKLOG EQUIPAMENTOS');
       if (!ESTRUTURA.BASE.encontrada) faltando.push('Laudos Óleo SOS');
+      if (!ESTRUTURA.ARREF.encontrada) faltando.push('Laudos Arrefecimento SOS');
       if (!ESTRUTURA.CONTROLE.encontrada) faltando.push('CONTROLE LAUDOS');
       if (ESTRUTURA.BACKLOG_EQ.encontrada) {
         Object.keys(ESTRUTURA.BACKLOG_EQ.subpastas).forEach(k => {
@@ -1027,10 +1174,10 @@
       renderizarLista();
 
       const totBE = getArquivosBacklogEq().length;
-      const total = totBE + ESTRUTURA.BASE.arquivos.length + ESTRUTURA.CONTROLE.arquivos.length;
+      const total = totBE + ESTRUTURA.BASE.arquivos.length + ESTRUTURA.ARREF.arquivos.length + ESTRUTURA.CONTROLE.arquivos.length;
       setStatus(`${total} arquivo(s) encontrado(s) no total em "${diretorioHandle.name}".`);
       document.getElementById('statusRight').textContent =
-        `Backlog Eq: ${totBE} | Base: ${ESTRUTURA.BASE.arquivos.length} | Controle: ${ESTRUTURA.CONTROLE.arquivos.length}`;
+        `Backlog Eq: ${totBE} | Base: ${ESTRUTURA.BASE.arquivos.length} | Arref: ${ESTRUTURA.ARREF.arquivos.length} | Controle: ${ESTRUTURA.CONTROLE.arquivos.length}`;
     } catch (err) {
       setStatus('Erro ao ler estrutura: ' + err.message);
       document.getElementById('alertas').innerHTML = '<div class="alert">❌ Erro: ' + escapeHTML(err.message) + '</div>';
@@ -1044,6 +1191,7 @@
 
   function getArquivosDaTelaDados(tela) {
     if (tela === 'BASE') return ESTRUTURA.BASE.arquivos;
+    if (tela === 'ARREF') return ESTRUTURA.ARREF.arquivos;
     if (tela === 'CONTROLE') return ESTRUTURA.CONTROLE.arquivos;
     const sp = ESTRUTURA.BACKLOG_EQ.subpastas[tela];
     return sp ? sp.arquivos : [];
@@ -1052,7 +1200,7 @@
   function atualizarContadores() {
     const sub = ESTRUTURA.BACKLOG_EQ.subpastas;
     const totBE = getArquivosBacklogEq().length;
-    const total = totBE + ESTRUTURA.BASE.arquivos.length + ESTRUTURA.CONTROLE.arquivos.length;
+    const total = totBE + ESTRUTURA.BASE.arquivos.length + ESTRUTURA.ARREF.arquivos.length + ESTRUTURA.CONTROLE.arquivos.length;
 
     document.getElementById('count-TODOS').textContent = total;
     document.getElementById('badge-TODOS').textContent = total;
@@ -1060,6 +1208,8 @@
     document.getElementById('badge-BACKLOG_EQ').textContent = totBE;
     document.getElementById('count-BASE').textContent = ESTRUTURA.BASE.encontrada ? ESTRUTURA.BASE.arquivos.length : '—';
     document.getElementById('badge-BASE').textContent = ESTRUTURA.BASE.encontrada ? ESTRUTURA.BASE.arquivos.length : '—';
+    document.getElementById('count-ARREF').textContent = ESTRUTURA.ARREF.encontrada ? ESTRUTURA.ARREF.arquivos.length : '—';
+    document.getElementById('badge-ARREF').textContent = ESTRUTURA.ARREF.encontrada ? ESTRUTURA.ARREF.arquivos.length : '—';
     document.getElementById('count-CONTROLE').textContent = ESTRUTURA.CONTROLE.encontrada ? ESTRUTURA.CONTROLE.arquivos.length : '—';
     document.getElementById('badge-CONTROLE').textContent = ESTRUTURA.CONTROLE.encontrada ? ESTRUTURA.CONTROLE.arquivos.length : '—';
 
@@ -1074,6 +1224,7 @@
 
     [['BACKLOG_EQ', ESTRUTURA.BACKLOG_EQ.encontrada],
      ['BASE', ESTRUTURA.BASE.encontrada],
+     ['ARREF', ESTRUTURA.ARREF.encontrada],
      ['CONTROLE', ESTRUTURA.CONTROLE.encontrada],
      ['BACKLOG', sub.BACKLOG.encontrada],
      ['BACKLOG_PLANOS', sub.BACKLOG_PLANOS.encontrada],
@@ -1096,12 +1247,16 @@
     document.getElementById('valor-BASE').textContent = ESTRUTURA.BASE.encontrada ? ESTRUTURA.BASE.arquivos.length : '—';
     document.getElementById('card-BASE').classList.toggle('missing', !ESTRUTURA.BASE.encontrada);
     document.getElementById('sub-BASE').textContent = ESTRUTURA.BASE.encontrada ? 'arquivos em ' + ESTRUTURA.BASE.nomeReal : 'pasta não encontrada';
+    document.getElementById('valor-ARREF').textContent = ESTRUTURA.ARREF.encontrada ? ESTRUTURA.ARREF.arquivos.length : '—';
+    document.getElementById('card-ARREF').classList.toggle('missing', !ESTRUTURA.ARREF.encontrada);
+    document.getElementById('sub-ARREF').textContent = ESTRUTURA.ARREF.encontrada ? 'arquivos em ' + ESTRUTURA.ARREF.nomeReal : 'pasta não encontrada';
     document.getElementById('valor-CONTROLE').textContent = ESTRUTURA.CONTROLE.encontrada ? ESTRUTURA.CONTROLE.arquivos.length : '—';
     document.getElementById('card-CONTROLE').classList.toggle('missing', !ESTRUTURA.CONTROLE.encontrada);
     document.getElementById('sub-CONTROLE').textContent = ESTRUTURA.CONTROLE.encontrada ? 'arquivos em ' + ESTRUTURA.CONTROLE.nomeReal : 'pasta não encontrada';
 
     marcarTabMissing('BACKLOG_EQ', ESTRUTURA.BACKLOG_EQ.encontrada);
     marcarTabMissing('BASE', ESTRUTURA.BASE.encontrada);
+    marcarTabMissing('ARREF', ESTRUTURA.ARREF.encontrada);
     marcarTabMissing('CONTROLE', ESTRUTURA.CONTROLE.encontrada);
     marcarChipMissing('BACKLOG', sub.BACKLOG.encontrada);
     marcarChipMissing('BACKLOG_PLANOS', sub.BACKLOG_PLANOS.encontrada);
@@ -1145,7 +1300,7 @@
   }
   function atualizarMenuAtivo() {
     atualizarMenuModoAtivo();
-    ['TODOS','BACKLOG_EQ','BASE','CONTROLE','BACKLOG','BACKLOG_PLANOS','NOTAS'].forEach(k => {
+    ['TODOS','BACKLOG_EQ','BASE','ARREF','CONTROLE','BACKLOG','BACKLOG_PLANOS','NOTAS'].forEach(k => {
       const el = document.getElementById('menu-' + k);
       if (!el) return;
       let ativo = false;
@@ -1155,7 +1310,7 @@
       }
       el.classList.toggle('active', ativo);
     });
-    ['BACKLOG','BACKLOG_PLANOS','NOTAS','BASE','CONTROLE'].forEach(k => {
+    ['BACKLOG','BACKLOG_PLANOS','NOTAS','BASE','ARREF','CONTROLE'].forEach(k => {
       const el = document.getElementById('dmenu-' + k);
       if (!el) return;
       const ativo = (modoAtual === 'DADOS' && telaDadosAtiva === k);
@@ -1167,10 +1322,12 @@
     if (rel) rel.classList.toggle('active', modoAtual === 'RELATORIO');
     const mon = document.getElementById('cmenu-MONITORAMENTO');
     if (mon) mon.classList.toggle('active', modoAtual === 'MONITORAMENTO');
+    const tnd = document.getElementById('cmenu-TENDENCIA');
+    if (tnd) tnd.classList.toggle('active', modoAtual === 'TENDENCIA');
   }
 
   function obterArquivosAba() {
-    if (abaAtiva === 'TODOS') return [...getArquivosBacklogEq(), ...ESTRUTURA.BASE.arquivos, ...ESTRUTURA.CONTROLE.arquivos];
+    if (abaAtiva === 'TODOS') return [...getArquivosBacklogEq(), ...ESTRUTURA.BASE.arquivos, ...ESTRUTURA.ARREF.arquivos, ...ESTRUTURA.CONTROLE.arquivos];
     if (abaAtiva === 'BACKLOG_EQ') {
       const sub = ESTRUTURA.BACKLOG_EQ.subpastas;
       if (subAbaAtiva === 'TODOS_EQ') return getArquivosBacklogEq();
@@ -1179,6 +1336,7 @@
       if (subAbaAtiva === 'NOTAS') return sub.NOTAS.arquivos;
     }
     if (abaAtiva === 'BASE') return ESTRUTURA.BASE.arquivos;
+    if (abaAtiva === 'ARREF') return ESTRUTURA.ARREF.arquivos;
     if (abaAtiva === 'CONTROLE') return ESTRUTURA.CONTROLE.arquivos;
     return [];
   }
@@ -1218,12 +1376,13 @@
   }
 
   function labelOrigem(o) {
-    const m = { BACKLOG_EQ:'BACKLOG EQ', BASE:'BASE', CONTROLE:'CONTROLE', BACKLOG:'BACKLOG', BACKLOG_PLANOS:'PLANOS', NOTAS:'NOTAS', OUTROS:'OUTROS' };
+    const m = { BACKLOG_EQ:'BACKLOG EQ', BASE:'BASE', ARREF:'ARREFECIMENTO', CONTROLE:'CONTROLE', BACKLOG:'BACKLOG', BACKLOG_PLANOS:'PLANOS', NOTAS:'NOTAS', OUTROS:'OUTROS' };
     return m[o] || o;
   }
 
   function encontrarArquivo(origem, nome) {
     if (origem === 'BASE') return ESTRUTURA.BASE.arquivos.find(a => a.nome === nome);
+    if (origem === 'ARREF') return ESTRUTURA.ARREF.arquivos.find(a => a.nome === nome);
     if (origem === 'CONTROLE') return ESTRUTURA.CONTROLE.arquivos.find(a => a.nome === nome);
     if (origem === 'OUTROS') return ESTRUTURA.BACKLOG_EQ.outros.find(a => a.nome === nome);
     const sp = ESTRUTURA.BACKLOG_EQ.subpastas[origem];
@@ -1334,7 +1493,7 @@ Requisitos: Chrome ou Edge 86+</pre>`;
     document.querySelectorAll('#modoDados .tab').forEach(t => t.classList.toggle('active', t.dataset.tela === tela));
     atualizarMenuAtivo();
 
-    const labelMap = { BACKLOG:'📦 Backlog', BACKLOG_PLANOS:'📋 Backlog Planos', NOTAS:'📝 Notas', BASE:'🗄️ Base Laudos', CONTROLE:'📊 Controle Laudos' };
+    const labelMap = { BACKLOG:'📦 Backlog', BACKLOG_PLANOS:'📋 Backlog Planos', NOTAS:'📝 Notas', BASE:'🗄️ Base Laudos', ARREF:'🧊 Base Arrefecimento', CONTROLE:'📊 Controle Laudos' };
     document.getElementById('dadosTitulo').textContent = labelMap[tela] || tela;
 
     if (!diretorioHandle) {
@@ -1451,7 +1610,13 @@ Requisitos: Chrome ou Edge 86+</pre>`;
   }
   async function extrairDados(file, ext, origem) {
     ext = ext.toLowerCase();
-    if (origem === 'BASE' && ext === 'txt') { const texto = await file.text(); return parseBaseLaudosSOS(texto); }
+    if ((origem === 'BASE' || origem === 'ARREF') && ext === 'txt') {
+      const texto = await file.text();
+      const regs = parseBaseLaudosSOS(texto);
+      // Base Arrefecimento: remove espacos antes e depois do texto de COMP_DESC (inclui espaco nao separavel/tab)
+      if (origem === 'ARREF') { for (const r of regs) { if (typeof r['COMP_DESC'] === 'string') r['COMP_DESC'] = r['COMP_DESC'].trim(); } }
+      return regs;
+    }
     if (['xlsx','xls','xlsm','xlsb'].includes(ext)) {
       if (typeof XLSX === 'undefined') throw new Error('SheetJS não carregada (sem internet?). Não é possível ler ' + ext.toUpperCase());
       const buf = await file.arrayBuffer();
@@ -1604,14 +1769,16 @@ Requisitos: Chrome ou Edge 86+</pre>`;
   function _chaveEquipComp(equip, comp){
     return normalizarChave(equip) + '||' + normalizarChave(comp);
   }
-  function construirHist5Index(){
+  function construirHist5Index(incluirArref){
     const idx = new Map();
-    const base = (DADOS.BASE && DADOS.BASE.linhas) ? DADOS.BASE.linhas : [];
-    for(const l of base){
+    const base = ((DADOS.BASE && DADOS.BASE.linhas) ? DADOS.BASE.linhas : []).map(function(x){ return { l:x, tipo:'Óleo' }; });
+    if (incluirArref && DADOS.ARREF && DADOS.ARREF.linhas) DADOS.ARREF.linhas.forEach(function(x){ base.push({ l:x, tipo:'Arrefecimento' }); });
+    for(const _b of base){
+      const l = _b.l;
       const eq = normalizarChave(l['EQUIP_NUMBER']);
       const cp = normalizarChave(l['COMP_DESC']);
       if(!eq && !cp) continue;
-      const key = eq + '||' + cp;
+      const key = eq + '||' + cp + '||' + _b.tipo;
       const d = parseDataFlex(l['SAMPLED_DATE']) || parseDataFlex(l['PROCESS_DATE']) || parseDataFlex(l['INTERP_DATE_TIME']);
       if(!idx.has(key)) idx.set(key, []);
       idx.get(key).push({ t: d ? d.getTime() : -Infinity, v: l['OVERALL_INTERP'], textId: normalizarChave(l['TEXT_ID']) });
@@ -1623,8 +1790,8 @@ Requisitos: Chrome ou Edge 86+</pre>`;
   // Desenha 5 bolinhas: mais recente à DIREITA, mais antiga à esquerda.
   // Considera APENAS laudos com data usada ANTERIOR à data usada da amostra da linha.
   // Data usada: SAMPLED_DATE -> PROCESS_DATE -> INTERP_DATE_TIME
-  function bolinhas5HTML(equip, comp, idx, textIdLinha, dataLinha){
-    const key = _chaveEquipComp(equip, comp);
+  function bolinhas5HTML(equip, comp, idx, textIdLinha, dataLinha, tipoLaudo){
+    const key = _chaveEquipComp(equip, comp) + '||' + (tipoLaudo || 'Óleo');
     const tidLinha = normalizarChave(textIdLinha);
     const tRef = (dataLinha instanceof Date && !isNaN(dataLinha)) ? dataLinha.getTime() : null;
     let arr = (idx && idx.has(key)) ? idx.get(key) : [];
@@ -1726,7 +1893,7 @@ Requisitos: Chrome ou Edge 86+</pre>`;
   // ===== Modal de Filtros do Modo DADOS =====
   function abrirModalFiltrosDados() {
     if (!telaDadosAtiva || !DADOS[telaDadosAtiva] || DADOS[telaDadosAtiva].linhas.length === 0) { alert('Nenhum dado carregado nesta tela.'); return; }
-    const labelMap = { BACKLOG:'📦 Backlog', BACKLOG_PLANOS:'📋 Backlog Planos', NOTAS:'📝 Notas', BASE:'🗄\ufe0f Base Laudos', CONTROLE:'📊 Controle Laudos' };
+    const labelMap = { BACKLOG:'📦 Backlog', BACKLOG_PLANOS:'📋 Backlog Planos', NOTAS:'📝 Notas', BASE:'🗄\ufe0f Base Laudos', ARREF:'🧊 Base Arrefecimento', CONTROLE:'📊 Controle Laudos' };
     document.getElementById('modalFiltrosDadosTela').textContent = labelMap[telaDadosAtiva] || telaDadosAtiva;
     const f = getFiltrosDadosTela();
     const colunas = DADOS[telaDadosAtiva].colunas.filter(c => c !== '📎 Arquivo Origem');
@@ -1828,12 +1995,13 @@ Requisitos: Chrome ou Edge 86+</pre>`;
   }
 
   // ===== Auto-carregamento de TODAS as telas de dados =====
-  const TELAS_DADOS_ORDEM = ['BACKLOG', 'BACKLOG_PLANOS', 'NOTAS', 'BASE', 'CONTROLE'];
+  const TELAS_DADOS_ORDEM = ['BACKLOG', 'BACKLOG_PLANOS', 'NOTAS', 'BASE', 'ARREF', 'CONTROLE'];
   const TELAS_DADOS_LABEL = {
     BACKLOG: '📦 Backlog',
     BACKLOG_PLANOS: '📋 Backlog Planos',
     NOTAS: '📝 Notas',
     BASE: '🗄️ Base Laudos',
+    ARREF: '🧊 Base Arrefecimento',
     CONTROLE: '📊 Controle Laudos'
   };
 
@@ -1843,7 +2011,7 @@ Requisitos: Chrome ou Edge 86+</pre>`;
 
     // Compila SOMENTE Base Laudos ao selecionar a pasta (+ CONTROLE, do qual o Controle Análise depende).
     // BACKLOG / BACKLOG_PLANOS / NOTAS NAO sao pre-carregados (carregam sob demanda / via Avaliar Backlog).
-    const TELAS_AUTO = ['BASE', 'CONTROLE'];
+    const TELAS_AUTO = ['BASE', 'ARREF', 'CONTROLE'];
     const totalTelas = TELAS_AUTO.length;
     let somaRegistros = 0;
     let telasComDados = 0;
@@ -2072,12 +2240,19 @@ for (const linha of d.linhas) {
       } catch (err) { erros.push({ arquivo: arq.nome, erro: err.message }); }
     }
     if (!DADOS.BASE.carregado || DADOS.BASE.linhas.length === 0) { try { await carregarDados('BASE'); } catch (e) {} }
+    if (!DADOS.ARREF.carregado) { try { await carregarDados('ARREF'); } catch (e) {} }
+    const _laudosCtrl = [];
+    for (const _l of (DADOS.BASE.linhas || [])) _laudosCtrl.push({ l:_l, tipo:'Óleo' });
+    for (const _l of (DADOS.ARREF.linhas || [])) _laudosCtrl.push({ l:_l, tipo:'Arrefecimento' });
+    const _temArref = (DADOS.ARREF.linhas || []).length > 0;
     const linhas = [];
-    for (const laudo of (DADOS.BASE.linhas || [])) {
+    for (const _it of _laudosCtrl) {
+      const laudo = _it.l;
       const chave = normalizarChave(laudo['TEXT_ID']);
       const ctrls = (chave && CONTROLE_INDEX.has(chave)) ? CONTROLE_INDEX.get(chave) : [];
       const baseCols = {};
       for (const c of COLUNAS_BASE_LAUDOS) { const v = laudo[c]; baseCols[c] = (v !== undefined && v !== null) ? (typeof v === 'object' ? JSON.stringify(v) : v) : ''; }
+      baseCols[COLUNA_TIPO] = _it.tipo;
       if (ctrls.length === 0) {
         const linha = Object.assign({}, baseCols);
         for (const c of COLUNAS_CONTROLE) linha[c] = '';
@@ -2098,7 +2273,7 @@ for (const linha of d.linhas) {
         }
       }
     }
-    DADOS_CONTROLE_ANALISE.colunas = [...COLUNAS_BASE_LAUDOS, ...COLUNAS_CONTROLE, COLUNA_STATUS];
+    DADOS_CONTROLE_ANALISE.colunas = _temArref ? [COLUNA_TIPO, ...COLUNAS_BASE_LAUDOS, ...COLUNAS_CONTROLE, COLUNA_STATUS] : [...COLUNAS_BASE_LAUDOS, ...COLUNAS_CONTROLE, COLUNA_STATUS];
     DADOS_CONTROLE_ANALISE.linhas = linhas; DADOS_CONTROLE_ANALISE.erros = erros;
     DADOS_CONTROLE_ANALISE._amostrasUnicas = amostrasUnicas; DADOS_CONTROLE_ANALISE.carregado = true;
     atualizarBadgeControle();
@@ -2623,6 +2798,7 @@ for (const linha of d.linhas) {
     if (FILTROS_AVANCADOS.COMP_DESC.size) n++;
     if (FILTROS_AVANCADOS.EQUIP_NUMBER.size) n++;
     if (FILTROS_AVANCADOS.TEXT_ID.size) n++;
+    if (FILTROS_AVANCADOS.TIPO_LAUDO.size) n++;
     if (FILTROS_AVANCADOS.SAMPLED_DATE.de || FILTROS_AVANCADOS.SAMPLED_DATE.ate) n++;
     if (FILTROS_AVANCADOS.PROCESS_DATE.de || FILTROS_AVANCADOS.PROCESS_DATE.ate) n++;
     if (FILTROS_AVANCADOS.INTERP_DATE_TIME.de || FILTROS_AVANCADOS.INTERP_DATE_TIME.ate) n++;
@@ -2673,6 +2849,7 @@ for (const linha of d.linhas) {
     if (F.COMP_DESC.size && !F.COMP_DESC.has(String(l.COMP_DESC||''))) return false;
     if (F.EQUIP_NUMBER.size && !F.EQUIP_NUMBER.has(String(l.EQUIP_NUMBER||''))) return false;
     if (F.TEXT_ID.size && !F.TEXT_ID.has(String(l.TEXT_ID||''))) return false;
+    if (F.TIPO_LAUDO.size && !F.TIPO_LAUDO.has(String(l[COLUNA_TIPO]||''))) return false;
     for (const campo of ['SAMPLED_DATE','PROCESS_DATE','INTERP_DATE_TIME']) {
       const cfg = F[campo];
       if (cfg.de || cfg.ate) {
@@ -2700,7 +2877,8 @@ for (const linha of d.linhas) {
     stats.innerHTML = '<span>📊 Total laudos: <b>' + totalLaudos + '</b></span>' +
                       '<span style="color:var(--success)">\u2705 Com controle: <b>' + comControle + '</b></span>' +
                       '<span style="color:var(--warn)">\u26A0\ufe0f Sem controle: <b>' + semControle + '</b></span>' +
-                      '<span>🔑 Amostras no JSON: <b>' + amostrasUnicas + '</b></span>';
+                      '<span>🔑 Amostras no JSON: <b>' + amostrasUnicas + '</b></span>' +
+                      (dados.linhas.some(l => l[COLUNA_TIPO] === 'Arrefecimento') ? '<span style="color:#00838f">🧊 Arrefecimento: <b>' + dados.linhas.filter(l => l[COLUNA_TIPO] === 'Arrefecimento').length + '</b></span>' : '');
     const badgeFiltros = document.getElementById('badgeFiltros');
     if (badgeFiltros) { const n = contarFiltrosAtivos(); badgeFiltros.style.display = n > 0 ? 'inline-block' : 'none'; badgeFiltros.textContent = n; }
     if (dados.erros && dados.erros.length > 0) {
@@ -2726,7 +2904,7 @@ for (const linha of d.linhas) {
     function larguraColuna(nome) { return (LARGURAS[nome] || 130); }
     // Coluna especial (primeira): ultimos 5 OVERALL_INTERP como bolinhas coloridas
     const HIST5_W = 96;
-    const HIST5_INDEX = construirHist5Index();
+    const HIST5_INDEX = construirHist5Index(true);
     let colgroupHtml = '<colgroup>';
     colgroupHtml += '<col style="width:' + HIST5_W + 'px;">';
     colunas.forEach(c => colgroupHtml += '<col style="width:' + larguraColuna(c) + 'px;">');
@@ -2761,10 +2939,11 @@ for (const linha of d.linhas) {
         const __rowUid = (linha['__uid'] !== undefined && linha['__uid'] !== null) ? String(linha['__uid']) : '';
         tblHtml += '<tr ondblclick="abrirModalRegistroEdicao(\'' + __rowUid.replace(/'/g,"\\'") + '\', \'' + amostraKey + '\')">';
         const _dRefLinha = parseDataFlex(linha['SAMPLED_DATE']) || parseDataFlex(linha['PROCESS_DATE']) || parseDataFlex(linha['INTERP_DATE_TIME']);
-        tblHtml += '<td style="text-align:center; white-space:nowrap;">' + bolinhas5HTML(linha['EQUIP_NUMBER'], linha['COMP_DESC'], HIST5_INDEX, linha['TEXT_ID'], _dRefLinha) + '</td>';
+        tblHtml += '<td style="text-align:center; white-space:nowrap;">' + bolinhas5HTML(linha['EQUIP_NUMBER'], linha['COMP_DESC'], HIST5_INDEX, linha['TEXT_ID'], _dRefLinha, linha[COLUNA_TIPO]) + '</td>';
         colunas.forEach(c => {
           const val = linha[c] !== undefined ? linha[c] : '';
           let extra = '';
+          if (c === COLUNA_TIPO) extra = (val === 'Arrefecimento') ? ' style="color:#00838f; font-weight:600;"' : ' style="color:#1565c0; font-weight:600;"';
           if (c === COLUNA_STATUS) {
             if (val === '\u2705 Com controle') extra = ' style="background:#e8f5e9; color:var(--success); font-weight:600;"';
             else if (val === '\u26A0\ufe0f Sem controle') extra = ' style="background:#fff8e1; color:var(--warn); font-weight:600;"';
@@ -2950,7 +3129,7 @@ for (const linha of d.linhas) {
     }).join('') + '</div>';
   }
   // ===== Dropdown multisseleção com busca (Filtros Avançados) =====
-  const MS_CAMPOS = ['EQUIP_NUMBER','OVERALL_INTERP','COMP_DESC','TEXT_ID'];
+  const MS_CAMPOS = ['EQUIP_NUMBER','OVERALL_INTERP','COMP_DESC','TEXT_ID','TIPO_LAUDO'];
   const MS_MAX_LISTA = 500;
   let MS_TEMP = {}; let MS_VALORES = {}; let MS_VISIVEIS = {};
   function msPrepararTemp(){
@@ -3068,6 +3247,7 @@ for (const linha of d.linhas) {
         '<div class="form-row">' + msDropdownHTML('OVERALL_INTERP','OVERALL_INTERP') + '</div>' +
         '<div class="form-row">' + msDropdownHTML('COMP_DESC','COMP_DESC') + '</div>' +
         '<div class="form-row">' + msDropdownHTML('TEXT_ID','TEXT_ID') + '</div>' +
+        (((DADOS.ARREF && DADOS.ARREF.linhas || []).length) ? '<div class="form-row">' + msDropdownHTML('TIPO_LAUDO','Tipo de laudo (Óleo / Arrefecimento)') + '</div>' : '') +
       '</div></div>' +
       '<div class="filtros-secao"><div class="filtros-titulo">Datas</div>' +
         '<div class="form-row"><label>SAMPLED_DATE</label><div class="filtros-data">De <input type="date" id="fSampDe" value="' + (F.SAMPLED_DATE.de||'') + '"> At\u00e9 <input type="date" id="fSampAte" value="' + (F.SAMPLED_DATE.ate||'') + '"></div></div>' +
@@ -3097,7 +3277,7 @@ for (const linha of d.linhas) {
   function limparFiltrosAvancados() {
     FILTROS_AVANCADOS.OVERALL_INTERP.clear(); FILTROS_AVANCADOS.COMP_DESC.clear();
     FILTROS_AVANCADOS.Acao.clear(); FILTROS_AVANCADOS.AvaliacaoAnalista.clear();
-    FILTROS_AVANCADOS.EQUIP_NUMBER = new Set(); FILTROS_AVANCADOS.TEXT_ID = new Set();
+    FILTROS_AVANCADOS.EQUIP_NUMBER = new Set(); FILTROS_AVANCADOS.TEXT_ID = new Set(); FILTROS_AVANCADOS.TIPO_LAUDO = new Set();
     FILTROS_AVANCADOS.SAMPLED_DATE = { de:'', ate:'' }; FILTROS_AVANCADOS.PROCESS_DATE = { de:'', ate:'' }; FILTROS_AVANCADOS.INTERP_DATE_TIME = { de:'', ate:'' };
     FILTROS_AVANCADOS.STATUS = 'TODOS';
     abrirModalFiltros();
@@ -3269,7 +3449,7 @@ for (const linha of d.linhas) {
   }
 
   // ==================== AVALIAR BACKLOG ====================
-  let AVALIAR_EQUIP = ''; let AVALIAR_COMP = ''; let AVALIAR_AMOSTRA = ''; let AVALIAR_TAB = 'BACKLOG'; let AVALIAR_KEYS = [];
+  let AVALIAR_TIPO = 'OLEO'; let AVALIAR_EQUIP = ''; let AVALIAR_COMP = ''; let AVALIAR_AMOSTRA = ''; let AVALIAR_TAB = 'BACKLOG'; let AVALIAR_KEYS = [];
   // Dataset proprio do modal Avaliar Backlog (compilado SOB DEMANDA por equipamento)
   const AVALIAR_DADOS = {
     BACKLOG:        { colunas:[], linhas:[], carregado:false, erros:[] },
@@ -3355,9 +3535,9 @@ for (const linha of d.linhas) {
     const tag = String(AVALIAR_EQUIP||'').trim();
     const comp = String(AVALIAR_COMP||'').trim();
     const cont = document.getElementById('verificarRelatorioContent');
-    document.getElementById('verificarRelatorioTitulo').textContent = '📈 Relatório — ' + (tag||'(sem EQUIP)') + (comp ? (' / ' + comp) : '');
+    document.getElementById('verificarRelatorioTitulo').textContent = '📈 Relatório — ' + (tag||'(sem EQUIP)') + (comp ? (' / ' + comp) : '') + (AVALIAR_TIPO === 'ARREF' ? ' (Arrefecimento)' : '');
     if(!tag || !comp){ cont.innerHTML = '<div class="dados-placeholder"><div class="big">📈</div><h3>Sem TAG/Componente</h3><p>Não foi possível identificar o EQUIP_NUMBER e o COMP_DESC da amostra.</p></div>'; }
-    else { cont.innerHTML = montarRelatorioHTML(tag, comp, { incluirCMA: false }); }
+    else { cont.innerHTML = montarRelatorioHTML(tag, comp, { incluirCMA: false, tipo: AVALIAR_TIPO }); }
     document.getElementById('modalVerificarRelatorio').classList.add('show');
   }
   function fecharVerificarRelatorio(){ document.getElementById('modalVerificarRelatorio').classList.remove('show'); }
@@ -3371,7 +3551,7 @@ for (const linha of d.linhas) {
   function abrirGerarNota(){
     const amostra = String(AVALIAR_AMOSTRA||'').trim();
     let interp = '';
-    if(amostra && DADOS.BASE && DADOS.BASE.linhas){ const ch=normalizarChave(amostra); const rb=DADOS.BASE.linhas.find(l=>normalizarChave(l['TEXT_ID'])===ch); if(rb) interp = String(rb['INTERPRETATION_TEXT']==null?'':rb['INTERPRETATION_TEXT']).trim(); }
+    if(amostra && DADOS.BASE && DADOS.BASE.linhas){ const ch=normalizarChave(amostra); const rb=DADOS.BASE.linhas.concat(DADOS.ARREF.linhas||[]).find(l=>normalizarChave(l['TEXT_ID'])===ch); if(rb) interp = String(rb['INTERPRETATION_TEXT']==null?'':rb['INTERPRETATION_TEXT']).trim(); }
     const amostraConcat = amostra + (interp ? (' - ' + interp) : '');
     let localInst = '';
     const dsN = AVALIAR_DADOS['NOTAS'];
@@ -3570,9 +3750,12 @@ for (const linha of d.linhas) {
     let equip=''; let comp=''; const chave = normalizarChave(amostra);
     const row = (DADOS_CONTROLE_ANALISE.linhas||[]).find(l=>normalizarChave(l['TEXT_ID'])===chave);
     if(row){ equip = row['EQUIP_NUMBER']||''; comp = row['COMP_DESC']||''; }
-    if((!equip || !comp) && DADOS.BASE && DADOS.BASE.linhas){ const rb = DADOS.BASE.linhas.find(l=>normalizarChave(l['TEXT_ID'])===chave); if(rb){ if(!equip) equip = rb['EQUIP_NUMBER']||''; if(!comp) comp = rb['COMP_DESC']||''; } }
+    if((!equip || !comp) && DADOS.BASE && DADOS.BASE.linhas){ const rb = DADOS.BASE.linhas.concat(DADOS.ARREF.linhas||[]).find(l=>normalizarChave(l['TEXT_ID'])===chave); if(rb){ if(!equip) equip = rb['EQUIP_NUMBER']||''; if(!comp) comp = rb['COMP_DESC']||''; } }
     AVALIAR_EQUIP = String(equip||'').trim();
     AVALIAR_COMP = String(comp||'').trim();
+    AVALIAR_TIPO = 'OLEO';
+    if (row && row['TIPO_LAUDO'] === 'Arrefecimento') AVALIAR_TIPO = 'ARREF';
+    else if (!row && (DADOS.ARREF.linhas||[]).some(l=>normalizarChave(l['TEXT_ID'])===chave) && !(DADOS.BASE.linhas||[]).some(l=>normalizarChave(l['TEXT_ID'])===chave)) AVALIAR_TIPO = 'ARREF';
     AVALIAR_AMOSTRA = String(amostra||'').trim();
     AVALIAR_KEYS = []; AVALIAR_FILTROS = { BACKLOG:{}, BACKLOG_PLANOS:{}, NOTAS:{} }; AVALIAR_TAB='BACKLOG';
     document.getElementById('avaliarEquip').textContent = AVALIAR_EQUIP ? AVALIAR_EQUIP : '(EQUIP não identificado)';
@@ -3722,7 +3905,868 @@ for (const linha of d.linhas) {
     verificarLupasAvaliar();
   }
 
-    // ==================== RELATORIO ====================
+    // ==================== ANALISE DE TENDENCIA (por Componente) ====================
+  // dir=1 => "quanto maior pior" | dir=-1 => "quanto menor pior"
+  // Parametros avaliados em cada tipo de laudo (pasta). Arrefecimento avalia SOMENTE OIL_APPEAR, pH, Na e GL.
+  const TEND_PARAMS_OLEO = [
+    { k:'Fe',   dir: 1 }, { k:'Cr',  dir: 1 }, { k:'Pb', dir: 1 }, { k:'Sn', dir: 1 }, { k:'Al', dir: 1 }, { k:'Si', dir: 1 },
+    { k:'Ni',   dir: 1 }, { k:'Ag',  dir: 1 }, { k:'Ti', dir: 1 }, { k:'V',  dir: 1 }, { k:'Mn', dir: 1 },
+    { k:'V100', dir:-1 }, { k:'Ca',  dir:-1 }, { k:'Zn', dir:-1 }, { k:'Mg', dir:-1 }, { k:'Ba', dir:-1 },
+    { k:'B',    dir:-1 }, { k:'Na',  dir:-1 }
+  ];
+  // OIL_APPEAR e texto: a ordem e o peso (maior pior)
+  const TEND_ORD_OIL = { none:1, light:2, moderate:3, trace:4, excess:5 };
+  const TEND_PARAMS_ARREF = [
+    { k:'OIL_APPEAR', dir: 1, ord:TEND_ORD_OIL },
+    { k:'pH',         dir: 1 },
+    { k:'Na',         dir: 1 },
+    { k:'GL',         dir:-1 }
+  ];
+  const TEND_PARAMS_TIPO = { OLEO:TEND_PARAMS_OLEO, ARREF:TEND_PARAMS_ARREF };
+  // Elementos inter-relacionados (somente Oleo; cada um respeita a sua direcao de regra)
+  const TEND_INTER = ['Fe','Na','Mg','Si','Al','Pb','Cr','V100'];
+  const TEND_ALIAS = {
+    Na:['SODIO','SODIUM'], Si:['SILICIO','SILICON'], Fe:['FERRO','IRON'], Mg:['MAGNESIO','MAGNESIUM'], Al:['ALUMINIO','ALUMINUM','ALUMINIUM'], Pb:['CHUMBO','LEAD'], Cr:['CROMO','CHROMIUM'],
+    OIL_APPEAR:['OILAPPEAR','OIL_APPEARANCE','OIL APPEARANCE'], GL:['GLICOL','GLYCOL']
+  };
+  // Fontes de laudos: Oleo = pasta "Laudos Oleo SOS" (DADOS.BASE) | Arrefecimento = pasta "Laudos Arrefecimento SOS" (DADOS.ARREF)
+  const TEND_TIPOS = { OLEO:{ label:'\u00d3leo', cor:'#1565c0' }, ARREF:{ label:'Arrefecimento', cor:'#00838f' } };
+  const TEND_MIN_PONTOS = 3;           // minimo de amostras (com data) por equipamento para calcular tendencia
+  const TEND_CATS = ['NORMAL','MONITORAR','CRITICO','OUTROS'];
+  const TEND_CLS = {
+    PIORANDO:   { txt:'Piorando',   cor:'#e53935' },
+    MELHORANDO: { txt:'Melhorando', cor:'#1faa59' },
+    ESTAVEL:    { txt:'Est\u00e1vel', cor:'#78909c' },
+    SEM_DADOS:  { txt:'Dados insuf.', cor:'#b0bec5' }
+  };
+  let TEND_LIMIAR = 10;                // % (ou p.p. no indice composto) de variacao no periodo para considerar piorando/melhorando
+  let TEND_TIPO = 'TODOS';             // TODOS | OLEO | ARREF
+  let TEND_DADOS = null;
+  let TEND_ABERTOS = new Set();        // componentes expandidos (inicia vazio = tudo recolhido)
+  let TEND_TIMER = null;
+
+  function _tendFmt(v){
+    if (v === null || v === undefined || isNaN(v)) return '\u2014';
+    const a = Math.abs(v);
+    if (a !== 0 && (a < 0.01 || a >= 100000)) return v.toPrecision(3).replace('.', ',');
+    return (Math.round(v * 100) / 100).toLocaleString('pt-BR');
+  }
+  // formata o valor de um parametro (OIL_APPEAR mostra o texto + peso, ex.: "moderate (3)")
+  function _tendFmtP(p, v){
+    if (p && p.ord && v !== null && v !== undefined && !isNaN(v)){
+      const n = Math.round(v);
+      if (Math.abs(v - n) < 1e-9){ for (const k in p.ord){ if (p.ord[k] === n) return k + ' (' + n + ')'; } }
+    }
+    return _tendFmt(v);
+  }
+  function _tendFmtPct(p){
+    if (p === null || p === undefined || isNaN(p)) return '\u2014';
+    return (p > 0 ? '+' : '') + p.toFixed(1).replace('.', ',') + '%';
+  }
+  function _tendFmtPP(p){
+    if (p === null || p === undefined || isNaN(p)) return '\u2014';
+    return (p > 0 ? '+' : '') + p.toFixed(1).replace('.', ',') + ' p.p.';
+  }
+  function _tendStr(v){ return String(v == null ? '' : v).trim(); }
+  function _tendNorm(c){ return String(c).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim(); }
+  function _tendCatInfo(cat){ return _monCat(cat); }
+  function _tendRefTxt(prefixo, r){
+    if (!r) return '';
+    const d = (r.t !== null && r.t !== undefined) ? formatarDataBR(new Date(r.t)) : 's/ data';
+    return prefixo + ': ' + (r.eq || '(sem EQUIP)') + ' \u00b7 ' + d + (r.id ? (' \u00b7 ' + r.id) : '');
+  }
+  // OIL_APPEAR (texto) -> peso: none 1, light 2, moderate 3, trace 4, excess 5 (aceita tambem o numero 1-5 ja convertido)
+  function _tendOrdVal(p, raw){
+    if (raw === null || raw === undefined) return null;
+    const s = _tendNorm(raw).toLowerCase();
+    if (!s) return null;
+    if (Object.prototype.hasOwnProperty.call(p.ord, s)) return p.ord[s];
+    const n = _numeroFlex(raw);
+    if (n !== null && Number.isInteger(n) && n >= 1 && n <= 5) return n;
+    return null;
+  }
+  // Fontes ativas (respeitando o filtro de tipo). todas=true ignora o filtro de tipo.
+  function _tendFontes(todas){
+    const f = [];
+    if (DADOS.BASE && DADOS.BASE.carregado && DADOS.BASE.linhas.length) f.push({ tipo:'OLEO', linhas:DADOS.BASE.linhas, colunas:DADOS.BASE.colunas || [] });
+    if (DADOS.ARREF && DADOS.ARREF.carregado && DADOS.ARREF.linhas.length) f.push({ tipo:'ARREF', linhas:DADOS.ARREF.linhas, colunas:DADOS.ARREF.colunas || [] });
+    return todas ? f : f.filter(x => TEND_TIPO === 'TODOS' || x.tipo === TEND_TIPO);
+  }
+  // Localiza a coluna do parametro (match estrito para nao confundir V com V100 etc.)
+  function _tendAcharCol(colunas, nome){
+    const alvo = _tendNorm(nome); const alvoU = alvo.replace(/\s+/g, '_');
+    const cols = colunas.map(c => ({ c:c, n:_tendNorm(c) }));
+    let f = cols.find(x => x.n === alvo || x.n.replace(/\s+/g, '_') === alvoU); if (f) return f.c;
+    const re1 = new RegExp('^' + alvo + '\\s*[\\(\\[]');
+    f = cols.find(x => re1.test(x.n)); if (f) return f.c;
+    const re2 = new RegExp('^' + alvo + '[\\s_]*PPM$');
+    f = cols.find(x => re2.test(x.n)); if (f) return f.c;
+    const al = TEND_ALIAS[nome] || [];
+    for (const a of al){ f = cols.find(x => x.n === a || x.n.indexOf(a + ' ') === 0 || x.n.indexOf(a + '_') === 0 || x.n.indexOf(a + '(') === 0); if (f) return f.c; }
+    return null;
+  }
+  function _tendColModel(colunas){
+    const cols = colunas || [];
+    for (const c of cols){ if (_tendNorm(c) === 'MODEL') return c; }
+    for (const c of cols){ if (_tendNorm(c) === 'MODELO') return c; }
+    return null;
+  }
+  // Regressao linear (x em dias)
+  function _tendRegressao(pts){
+    const n = pts.length; if (n < TEND_MIN_PONTOS) return null;
+    const DIA = 86400000; const t0 = pts[0].t;
+    let sx = 0, sy = 0, sxx = 0, sxy = 0, mn = Infinity, mx = -Infinity;
+    for (const p of pts){ const x = (p.t - t0) / DIA; sx += x; sy += p.v; sxx += x * x; sxy += x * p.v; if (p.v < mn) mn = p.v; if (p.v > mx) mx = p.v; }
+    const den = n * sxx - sx * sx; if (den === 0) return null;
+    const a = (n * sxy - sx * sy) / den; const b = (sy - a * sx) / n;
+    const xEnd = (pts[n-1].t - t0) / DIA; const media = sy / n;
+    const denom = Math.abs(media) || (mx - mn) || 1;
+    return { a: a, b: b, t0: t0, xEnd: xEnd, media: media, pct: (a * xEnd) / denom * 100 };
+  }
+  function _tendClasse(pctPior){
+    if (pctPior === null || pctPior === undefined || isNaN(pctPior)) return 'SEM_DADOS';
+    if (pctPior > TEND_LIMIAR) return 'PIORANDO';
+    if (pctPior < -TEND_LIMIAR) return 'MELHORANDO';
+    return 'ESTAVEL';
+  }
+  function _tendAnalisarParam(comp, p, temCol){
+    const st = {}; for (const c of TEND_CATS) st[c] = { n:0, min:null, max:null, minRef:null, maxRef:null };
+    const porEq = new Map(); let n = 0; let ultimo = null;
+    for (const r of comp.rows){
+      const v = r.vals[p.k]; if (v === undefined) continue;
+      n++;
+      const s = st[r.cat]; s.n++;
+      if (s.min === null || v < s.min){ s.min = v; s.minRef = r; }
+      if (s.max === null || v > s.max){ s.max = v; s.maxRef = r; }
+      if (r.t !== null){
+        if (!porEq.has(r.eq)) porEq.set(r.eq, []);
+        porEq.get(r.eq).push({ t:r.t, v:v, cat:r.cat, eq:r.eq, id:r.id });
+        if (!ultimo || r.t > ultimo.t) ultimo = { t:r.t, v:v, r:r };
+      }
+    }
+    const series = [];
+    let somaPeso = 0, somaPior = 0, somaRaw = 0, nPior = 0, nMelhor = 0, nAval = 0;
+    const eqs = Array.from(porEq.keys()).sort((a,b) => a.localeCompare(b));
+    for (const eq of eqs){
+      const pts = porEq.get(eq).sort((a,b) => a.t - b.t);
+      const reg = _tendRegressao(pts);
+      let cls = 'SEM_DADOS', pior = null;
+      if (reg){
+        pior = p.dir * reg.pct; cls = _tendClasse(pior);
+        somaPeso += pts.length; somaPior += pior * pts.length; somaRaw += reg.pct * pts.length; nAval++;
+        if (cls === 'PIORANDO') nPior++; else if (cls === 'MELHORANDO') nMelhor++;
+      }
+      series.push({ eq:eq, pts:pts, reg:reg, cls:cls, pior:pior });
+    }
+    const pctPior = somaPeso ? somaPior / somaPeso : null;
+    const pctRaw = somaPeso ? somaRaw / somaPeso : null;
+    return { p:p, temCol:temCol, n:n, st:st, series:series, ultimo:ultimo, pctPior:pctPior, pctRaw:pctRaw, cls:_tendClasse(pctPior), nAval:nAval, nPior:nPior, nMelhor:nMelhor };
+  }
+
+  // ----- Inter-relacao entre Fe, Na, Mg, Si, Al, Pb, Cr, V100 (somente Oleo; cada um na sua direcao de regra) -----
+  // Cada valor e normalizado pelo historico do componente (0 = melhor, 1 = pior, respeitando "maior/menor pior")
+  function _tendPearson(xs, ys){
+    const n = xs.length; if (n < 5) return null;
+    let mx = 0, my = 0; for (let i = 0; i < n; i++){ mx += xs[i]; my += ys[i]; } mx /= n; my /= n;
+    let sxx = 0, syy = 0, sxy = 0;
+    for (let i = 0; i < n; i++){ const dx = xs[i] - mx, dy = ys[i] - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
+    if (sxx === 0 || syy === 0) return null;
+    return sxy / Math.sqrt(sxx * syy);
+  }
+  function _tendInterGet(comp){
+    if (comp.inter !== undefined) return comp.inter;
+    if (comp.tipo !== 'OLEO'){ comp.inter = null; return null; }
+    const elems = [];
+    for (const k of TEND_INTER){
+      const a = comp.params.find(x => x.p.k === k);
+      if (a && a.n > 0) elems.push(a.p);
+    }
+    if (elems.length < 2){ comp.inter = null; return null; }
+    const rg = {};
+    for (const p of elems){
+      let mn = Infinity, mx = -Infinity;
+      for (const r of comp.rows){ const v = r.vals[p.k]; if (v === undefined) continue; if (v < mn) mn = v; if (v > mx) mx = v; }
+      rg[p.k] = { mn:mn, mx:mx };
+    }
+    const score = function(p, v){ const g = rg[p.k]; if (g.mx === g.mn) return 0; const s = (v - g.mn) / (g.mx - g.mn); return p.dir === 1 ? s : 1 - s; };
+    const amostras = []; const minEl = Math.min(3, elems.length);
+    for (const r of comp.rows){
+      const s = {}; let n = 0, sum = 0;
+      for (const p of elems){ const v = r.vals[p.k]; if (v === undefined) continue; s[p.k] = score(p, v); sum += s[p.k]; n++; }
+      if (n >= minEl) amostras.push({ r:r, s:s, idx:sum / n });
+    }
+    const corr = {}; const pares = [];
+    for (let i = 0; i < elems.length; i++){
+      for (let j = 0; j < elems.length; j++){
+        const a = elems[i].k, b = elems[j].k; const xs = [], ys = [];
+        for (const am of amostras){ if (am.s[a] !== undefined && am.s[b] !== undefined){ xs.push(am.s[a]); ys.push(am.s[b]); } }
+        const r = (i === j) ? 1 : _tendPearson(xs, ys);
+        corr[a + '|' + b] = { r:r, n:xs.length };
+        if (j > i && r !== null) pares.push({ a:a, b:b, r:r, n:xs.length });
+      }
+    }
+    pares.sort((x, y) => y.r - x.r);
+    const porEq = new Map();
+    for (const am of amostras){ if (am.r.t === null) continue; if (!porEq.has(am.r.eq)) porEq.set(am.r.eq, []); porEq.get(am.r.eq).push({ t:am.r.t, v:am.idx * 100, cat:am.r.cat, eq:am.r.eq, id:am.r.id }); }
+    let somaPeso = 0, somaDelta = 0; const series = [];
+    for (const eq of Array.from(porEq.keys()).sort((a,b) => a.localeCompare(b))){
+      const pts = porEq.get(eq).sort((a,b) => a.t - b.t); const reg = _tendRegressao(pts);
+      let delta = null; if (reg){ delta = reg.a * reg.xEnd; somaPeso += pts.length; somaDelta += delta * pts.length; }
+      series.push({ eq:eq, pts:pts, reg:reg, delta:delta });
+    }
+    const delta = somaPeso ? somaDelta / somaPeso : null;
+    const cls = delta === null ? 'SEM_DADOS' : (delta > TEND_LIMIAR ? 'PIORANDO' : (delta < -TEND_LIMIAR ? 'MELHORANDO' : 'ESTAVEL'));
+    const piorando = elems.filter(p => { const a = comp.params.find(x => x.p.k === p.k); return a && a.cls === 'PIORANDO'; }).map(p => p.k);
+    comp.inter = { elems:elems, rg:rg, amostras:amostras, corr:corr, pares:pares, series:series, delta:delta, cls:cls, piorando:piorando };
+    return comp.inter;
+  }
+
+  function calcularTendencia(){
+    const fontes = _tendFontes(false);
+    const colsPorTipo = {}; const ausentes = {};
+    for (const f of fontes){
+      const o = {}; ausentes[f.tipo] = [];
+      for (const p of TEND_PARAMS_TIPO[f.tipo]){ o[p.k] = _tendAcharCol(f.colunas, p.k); if (!o[p.k]) ausentes[f.tipo].push(p.k); }
+      colsPorTipo[f.tipo] = o;
+    }
+    const sM = TEND_MS.MODEL.sel, sE = TEND_MS.EQUIP.sel, sC = TEND_MS.COMP.sel;
+    const mapa = new Map(); const catsGlob = {}; for (const c of TEND_CATS) catsGlob[c] = 0;
+    const equipsGlob = new Set(); let totalLaudos = 0;
+    for (const f of fontes){
+      const colM = _tendColModel(f.colunas); const cols = colsPorTipo[f.tipo]; const params = TEND_PARAMS_TIPO[f.tipo];
+      for (const l of f.linhas){
+        const eq = _tendStr(l['EQUIP_NUMBER']); const comp = _tendStr(l['COMP_DESC']); const model = colM ? _tendStr(l[colM]) : '';
+        if (sM.size && !sM.has(model)) continue;
+        if (sE.size && !sE.has(eq)) continue;
+        if (sC.size && !sC.has(comp)) continue;
+        if (!comp) continue;
+        const cat = _monCatOverall(l['OVERALL_INTERP']);
+        const d = _dataLaudo(l); const di = parseDataFlex(l['INTERP_DATE_TIME']);
+        const ti = di ? di.getTime() : null;
+        const r = { eq:eq, model:model, tipo:f.tipo, id:_tendStr(l['TEXT_ID']), cat:cat, t:(ti !== null ? ti : (d ? d.getTime() : null)), ti:ti, vals:{} };
+        for (const p of params){ const c = cols[p.k]; if (!c) continue; const v = p.ord ? _tendOrdVal(p, l[c]) : _numeroFlex(l[c]); if (v !== null) r.vals[p.k] = v; }
+        const key = f.tipo + '|' + normalizarChave(comp);
+        if (!mapa.has(key)) mapa.set(key, { key:key, nome:comp, tipo:f.tipo, rows:[], equips:new Set(), cats:(function(){ const o = {}; for (const c of TEND_CATS) o[c] = 0; return o; })() });
+        const g = mapa.get(key); g.rows.push(r); g.equips.add(eq); g.cats[cat]++;
+        catsGlob[cat]++; equipsGlob.add(eq); totalLaudos++;
+      }
+    }
+    const comps = Array.from(mapa.values());
+    let totPior = 0, totMelhor = 0, compsAlerta = 0;
+    for (const c of comps){
+      c.params = [];
+      for (const p of TEND_PARAMS_TIPO[c.tipo]){ c.params.push(_tendAnalisarParam(c, p, !!colsPorTipo[c.tipo][p.k])); }
+      c.nPiorando = c.params.filter(a => a.cls === 'PIORANDO').length;
+      c.nMelhorando = c.params.filter(a => a.cls === 'MELHORANDO').length;
+      totPior += c.nPiorando; totMelhor += c.nMelhorando; if (c.nPiorando > 0) compsAlerta++;
+    }
+    comps.sort((a,b) => (b.nPiorando - a.nPiorando) || (b.cats.CRITICO - a.cats.CRITICO) || a.nome.localeCompare(b.nome) || a.tipo.localeCompare(b.tipo));
+    const mostrarTipo = fontes.length > 1 || (fontes.length === 1 && fontes[0].tipo === 'ARREF');
+    return { comps:comps, ausentes:ausentes, tipos:fontes.map(f => f.tipo), totalLaudos:totalLaudos, catsGlob:catsGlob, nEquips:equipsGlob.size, totPior:totPior, totMelhor:totMelhor, compsAlerta:compsAlerta, temOutros:(catsGlob.OUTROS > 0), mostrarTipo:mostrarTipo };
+  }
+
+  function _tendBadge(cls, pctRaw){
+    const c = TEND_CLS[cls] || TEND_CLS.SEM_DADOS;
+    let seta = '';
+    if (cls === 'ESTAVEL') seta = '\u2192 '; else if (cls !== 'SEM_DADOS') seta = (pctRaw > 0 ? '\u2191 ' : '\u2193 ');
+    const tip = (cls === 'SEM_DADOS') ? ' title="M\u00ednimo de ' + TEND_MIN_PONTOS + ' amostras com data por equipamento"' : '';
+    return '<span class="tend-b" style="background:' + c.cor + ';"' + tip + '>' + seta + escapeHTML(c.txt) + '</span>';
+  }
+  function _tendTipoBadge(tipo){
+    const t = TEND_TIPOS[tipo]; if (!t) return '';
+    return '<span class="tend-b" style="background:' + t.cor + ';font-size:10px;padding:1px 8px;">' + escapeHTML(t.label) + '</span>';
+  }
+  function _tendCelula(st, ext, p){
+    if (!st || st.n === 0) return '<td class="tend-na">\u2014</td>';
+    const v = st[ext]; const ref = st[ext + 'Ref'];
+    const pior = (p.dir === 1 && ext === 'max') || (p.dir === -1 && ext === 'min');
+    return '<td class="tend-num' + (pior ? ' tend-pior' : '') + '" title="' + escapeHTML(_tendRefTxt(ext === 'min' ? 'M\u00edn' : 'M\u00e1x', ref)) + '">' + escapeHTML(_tendFmtP(p, v)) + '</td>';
+  }
+  function _tendCorCorr(r){
+    if (r === null || r === undefined) return '#f5f5f5';
+    const a = Math.min(1, Math.abs(r));
+    return r >= 0 ? 'rgba(229,57,53,' + (0.12 + a * 0.7).toFixed(2) + ')' : 'rgba(30,136,229,' + (0.12 + a * 0.7).toFixed(2) + ')';
+  }
+  function _tendInterHTML(ci, comp){
+    if (comp.tipo !== 'OLEO') return '';   // inter-relacao existe somente para laudos de Oleo
+    const I = _tendInterGet(comp);
+    let h = '<div class="tend-inter"><div class="tend-inter-head"><span class="tend-inter-title">\uD83D\uDD17 Inter-rela\u00e7\u00e3o: ' + TEND_INTER.join(', ') + '</span>';
+    if (!I){
+      h += '</div><div style="font-size:12px;color:var(--text-muted);">Dados insuficientes (m\u00ednimo de 2 elementos do grupo com valores neste componente).</div></div>';
+      return h;
+    }
+    h += '<span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">';
+    h += '<span style="font-size:12px;color:var(--text-soft);">\u00cdndice composto de severidade:</span> ' + _tendBadge(I.cls, I.delta) + ' <b style="font-size:12px;">' + _tendFmtPP(I.delta) + '</b>';
+    h += '<button type="button" class="tend-btn-graf" data-ci="' + ci + '" data-pk="__INTER__" title="Abrir gr\u00e1fico normalizado de inter-rela\u00e7\u00e3o por INTERP_DATE_TIME">\uD83D\uDCC8 Gr\u00e1fico inter-rela\u00e7\u00e3o</button></span></div>';
+    const n = I.piorando.length;
+    let alerta;
+    if (n >= 3) alerta = '<span class="tend-b" style="background:#b71c1c;">\u26A0 Degrada\u00e7\u00e3o generalizada: ' + n + ' elementos piorando juntos (' + escapeHTML(I.piorando.join(', ')) + ')</span>';
+    else if (n > 0) alerta = '<span class="tend-b" style="background:#ef6c00;">Piora isolada: ' + escapeHTML(I.piorando.join(', ')) + '</span>';
+    else alerta = '<span class="tend-b" style="background:#78909c;">Sem piora simult\u00e2nea no grupo</span>';
+    h += '<div style="margin:6px 0 8px;">' + alerta + '</div>';
+    h += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
+    for (const p of I.elems){
+      const a = comp.params.find(x => x.p.k === p.k); const c = TEND_CLS[a.cls] || TEND_CLS.SEM_DADOS;
+      h += '<span class="tend-chip" style="border-color:' + c.cor + ';color:' + c.cor + ';" title="' + (p.dir === 1 ? 'Quanto maior pior' : 'Quanto menor pior') + '">' + escapeHTML(p.k) + ' ' + (p.dir === 1 ? '\u2191' : '\u2193') + ' \u00b7 ' + escapeHTML(c.txt) + (a.pctRaw !== null ? (' (' + _tendFmtPct(a.pctRaw) + ')') : '') + '</span>';
+    }
+    h += '</div>';
+    h += '<div style="overflow:auto;"><table class="tend-matriz"><thead><tr><th></th>';
+    for (const p of I.elems) h += '<th>' + escapeHTML(p.k) + '</th>';
+    h += '</tr></thead><tbody>';
+    for (const pa of I.elems){
+      h += '<tr><th>' + escapeHTML(pa.k) + '</th>';
+      for (const pb of I.elems){
+        const c = I.corr[pa.k + '|' + pb.k]; const r = c ? c.r : null;
+        const txt = (pa.k === pb.k) ? '1' : (r === null ? '\u2014' : r.toFixed(2).replace('.', ','));
+        h += '<td style="background:' + _tendCorCorr(pa.k === pb.k ? null : r) + ';" title="' + escapeHTML(pa.k + ' \u00d7 ' + pb.k + (c ? (' \u00b7 n=' + c.n) : '')) + '">' + txt + '</td>';
+      }
+      h += '</tr>';
+    }
+    h += '</tbody></table></div>';
+    const fortes = I.pares.filter(x => x.r >= 0.6).slice(0, 6);
+    h += '<div style="font-size:11px;color:var(--text-soft);margin-top:6px;line-height:1.6;">' +
+      (fortes.length ? ('<b>Pares que pioram juntos (r \u2265 0,6):</b> ' + fortes.map(x => escapeHTML(x.a + '\u00d7' + x.b) + ' (' + x.r.toFixed(2).replace('.', ',') + ')').join(' \u00b7 ') + '<br>') : '<b>Nenhum par com correla\u00e7\u00e3o forte (r \u2265 0,6) de piora conjunta.</b><br>') +
+      'Cada valor \u00e9 normalizado pelo hist\u00f3rico do componente (0 = melhor, 100 = pior) respeitando a regra de cada elemento (\u2191 maior pior / \u2193 menor pior). Correla\u00e7\u00e3o positiva (vermelho) = os elementos pioram juntos; negativa (azul) = um piora enquanto o outro melhora. \u00cdndice composto = m\u00e9dia da severidade dos elementos dispon\u00edveis na amostra.</div></div>';
+    return h;
+  }
+  function _tendEscalaOil(){ return Object.keys(TEND_ORD_OIL).map(k => k + ' ' + TEND_ORD_OIL[k]).join(' \u00b7 '); }
+  function renderTendComp(ci){
+    const comp = TEND_DADOS.comps[ci]; if (!comp) return '';
+    const cats = TEND_CATS.filter(c => c !== 'OUTROS' || TEND_DADOS.temOutros);
+    let h = '<div style="overflow:auto;"><table class="tend-table"><thead><tr>' +
+      '<th rowspan="2" style="text-align:left;">Par\u00e2metro</th><th rowspan="2">Regra</th><th rowspan="2">Tend\u00eancia</th><th rowspan="2">Var. %</th><th rowspan="2" title="Equipamentos piorando / avaliados">Equip. piorando</th><th rowspan="2" title="Amostra mais recente">\u00daltimo</th>';
+    for (const c of cats){ const ci2 = _tendCatInfo(c); h += '<th colspan="2" style="background:' + ci2.cor + ';color:' + (c === 'MONITORAR' ? '#2a2a2a' : '#fff') + ';">' + escapeHTML(ci2.label) + '</th>'; }
+    h += '<th rowspan="2" title="Abrir gr\u00e1fico por INTERP_DATE_TIME">Gr\u00e1fico</th>';
+    h += '</tr><tr>';
+    for (const c of cats){ const ci2 = _tendCatInfo(c); const fg = (c === 'MONITORAR' ? '#2a2a2a' : '#fff'); h += '<th class="tend-sub" style="background:' + ci2.cor + ';color:' + fg + ';">M\u00edn</th><th class="tend-sub" style="background:' + ci2.cor + ';color:' + fg + ';">M\u00e1x</th>'; }
+    h += '</tr></thead><tbody>';
+    const nCols = 7 + cats.length * 2; let temOrd = false;
+    comp.params.forEach(function(a){
+      const p = a.p; const inter = comp.tipo === 'OLEO' && TEND_INTER.indexOf(p.k) !== -1;
+      if (p.ord) temOrd = true;
+      const nome = '<b>' + escapeHTML(p.k) + '</b>' + (inter ? ' <span title="Faz parte do grupo de inter-rela\u00e7\u00e3o" style="font-size:10px;">\uD83D\uDD17</span>' : '');
+      const regra = '<td class="tend-regra"' + (p.ord ? ' title="Peso: ' + escapeHTML(_tendEscalaOil()) + '"' : '') + '>' + (p.dir === 1 ? '\u2191 maior pior' : '\u2193 menor pior') + (p.ord ? ' (peso)' : '') + '</td>';
+      if (a.n === 0){
+        h += '<tr class="tend-row-vazio"><td style="text-align:left;">' + nome + '</td>' + regra +
+          '<td><span class="tend-b" style="background:#b0bec5;" title="' + (a.temCol ? 'Coluna encontrada, mas sem valores v\u00e1lidos neste componente' : 'Coluna n\u00e3o encontrada na pasta de laudos') + '">' + (a.temCol ? 'Sem dados' : 'Sem coluna') + '</span></td>' +
+          '<td class="tend-na">\u2014</td><td class="tend-na">\u2014</td><td class="tend-na">\u2014</td>';
+        for (const c of cats){ h += '<td class="tend-na">\u2014</td><td class="tend-na">\u2014</td>'; }
+        h += '<td class="tend-na">\u2014</td></tr>';
+        return;
+      }
+      const ult = a.ultimo ? '<td class="tend-num" title="' + escapeHTML(_tendRefTxt('\u00daltimo', a.ultimo.r)) + '">' + escapeHTML(_tendFmtP(p, a.ultimo.v)) + '</td>' : '<td class="tend-na">\u2014</td>';
+      h += '<tr class="tend-row" data-ci="' + ci + '" data-pk="' + escapeHTML(p.k) + '" title="Clique para ver o gr\u00e1fico de tend\u00eancia">' +
+        '<td style="text-align:left;">' + nome + '</td>' + regra +
+        '<td>' + _tendBadge(a.cls, a.pctRaw) + '</td>' +
+        '<td class="tend-num">' + _tendFmtPct(a.pctRaw) + '</td>' +
+        '<td class="tend-num">' + (a.nAval ? (a.nPior + '/' + a.nAval) : '\u2014') + '</td>' + ult;
+      for (const c of cats){ h += _tendCelula(a.st[c], 'min', p) + _tendCelula(a.st[c], 'max', p); }
+      h += '<td><button type="button" class="tend-btn-graf" data-ci="' + ci + '" data-pk="' + escapeHTML(p.k) + '" title="Abrir gr\u00e1fico de linha por INTERP_DATE_TIME">\uD83D\uDCC8 Gr\u00e1fico</button></td>';
+      h += '</tr><tr class="tend-chart-row" style="display:none;"><td colspan="' + nCols + '" class="tend-chart-cell"></td></tr>';
+    });
+    h += '</tbody></table></div>';
+    h += _tendInterHTML(ci, comp);
+    const aus = (TEND_DADOS.ausentes && TEND_DADOS.ausentes[comp.tipo]) || [];
+    if (aus.length) h += '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Colunas n\u00e3o encontradas nos laudos de ' + escapeHTML(TEND_TIPOS[comp.tipo].label) + ': ' + escapeHTML(aus.join(', ')) + '</div>';
+    if (temOrd) h += '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">OIL_APPEAR \u00e9 avaliado pelo peso da ordem (' + escapeHTML(_tendEscalaOil()) + '); quanto maior o peso, pior.</div>';
+    h += '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">Em negrito: extremo hist\u00f3rico \u201cpior\u201d do par\u00e2metro em cada status. Passe o mouse sobre um valor para ver equipamento, data e amostra.</div>';
+    return h;
+  }
+  // Grafico inline (clique na linha do parametro)
+  function svgTendChart(a){
+    const ord = !!a.p.ord;
+    const W = 860, H = 300, padL = ord ? 96 : 56, padR = 18, padT = 16, padB = 46;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const all = []; for (const s of a.series) for (const pt of s.pts) all.push(pt);
+    if (!all.length) return '<div style="color:var(--text-muted);font-size:12px;padding:10px;">Sem amostras com data para este par\u00e2metro.</div>';
+    let tmin = Infinity, tmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+    for (const pt of all){ if (pt.t < tmin) tmin = pt.t; if (pt.t > tmax) tmax = pt.t; if (pt.v < ymin) ymin = pt.v; if (pt.v > ymax) ymax = pt.v; }
+    const dataMin = ymin;
+    for (const s of a.series){ if (!s.reg) continue; const y1 = s.reg.b, y2 = s.reg.a * s.reg.xEnd + s.reg.b; ymin = Math.min(ymin, y1, y2); ymax = Math.max(ymax, y1, y2); }
+    if (ord){ ymin = Math.min(0.6, ymin - 0.1); ymax = Math.max(5.4, ymax + 0.1); }
+    else if (ymin === ymax){ const d = Math.abs(ymin) * 0.1 || 1; ymin -= d; ymax += d; }
+    else { const pad = (ymax - ymin) * 0.08; ymin -= pad; ymax += pad; }
+    if (!ord && dataMin >= 0 && ymin < 0) ymin = 0;
+    const DIA = 86400000; const spanT = tmax - tmin;
+    const xFor = t => spanT === 0 ? (padL + plotW / 2) : (padL + (t - tmin) / spanT * plotW);
+    const yFor = v => padT + plotH - (v - ymin) / (ymax - ymin) * plotH;
+    let grid = '', ylab = '', xlab = '';
+    const yTicks = ord ? [1,2,3,4,5] : [0,1,2,3,4].map(g => ymin + (ymax - ymin) * g / 4);
+    for (const val of yTicks){
+      const y = yFor(val);
+      grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="#eee"/>';
+      ylab += '<text x="' + (padL - 6) + '" y="' + (y + 3).toFixed(1) + '" font-size="9" text-anchor="end" fill="#666">' + escapeHTML(_tendFmtP(a.p, val)) + '</text>';
+    }
+    const nTicks = spanT === 0 ? 1 : 6;
+    for (let g = 0; g < nTicks; g++){
+      const t = spanT === 0 ? tmin : (tmin + spanT * g / (nTicks - 1)); const x = xFor(t);
+      xlab += '<line x1="' + x.toFixed(1) + '" y1="' + (padT + plotH) + '" x2="' + x.toFixed(1) + '" y2="' + (padT + plotH + 4) + '" stroke="#ccc"/>' +
+              '<text x="' + x.toFixed(1) + '" y="' + (padT + plotH + 16) + '" font-size="9" text-anchor="middle" fill="#666">' + _tendLblData(t, false) + '</text>';
+    }
+    const axis = '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + plotH) + '" stroke="#ccc"/><line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (W - padR) + '" y2="' + (padT + plotH) + '" stroke="#ccc"/>';
+    let linhas = '', tend = '', pontos = '';
+    for (const s of a.series){
+      if (s.pts.length >= 2){ linhas += '<polyline fill="none" stroke="#b0bec5" stroke-width="1" opacity="0.9" points="' + s.pts.map(pt => xFor(pt.t).toFixed(1) + ',' + yFor(pt.v).toFixed(1)).join(' ') + '"/>'; }
+      if (s.reg){
+        const cor = (TEND_CLS[s.cls] || TEND_CLS.ESTAVEL).cor;
+        tend += '<line x1="' + xFor(s.reg.t0).toFixed(1) + '" y1="' + yFor(s.reg.b).toFixed(1) + '" x2="' + xFor(s.reg.t0 + s.reg.xEnd * DIA).toFixed(1) + '" y2="' + yFor(s.reg.a * s.reg.xEnd + s.reg.b).toFixed(1) + '" stroke="' + cor + '" stroke-width="2" stroke-dasharray="6,4"><title>' + escapeHTML((s.eq || '(sem EQUIP)') + ': ' + _tendFmtPct(s.reg.pct) + ' no per\u00edodo \u2014 ' + (TEND_CLS[s.cls] || TEND_CLS.ESTAVEL).txt) + '</title></line>';
+      }
+    }
+    for (const pt of all){
+      const ci2 = _tendCatInfo(pt.cat);
+      pontos += '<circle cx="' + xFor(pt.t).toFixed(1) + '" cy="' + yFor(pt.v).toFixed(1) + '" r="3.8" fill="' + ci2.cor + '" stroke="#fff" stroke-width="1"><title>' + escapeHTML((pt.eq || '(sem EQUIP)') + ' \u00b7 ' + formatarDataBR(new Date(pt.t)) + ' \u00b7 ' + ci2.label + ' \u00b7 ' + a.p.k + ' = ' + _tendFmtP(a.p, pt.v) + (pt.id ? (' \u00b7 ' + pt.id) : '')) + '</title></circle>';
+    }
+    const svg = '<svg width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" style="max-height:340px;">' + grid + axis + ylab + xlab + linhas + tend + pontos + '</svg>';
+    let chips = '';
+    const comTend = a.series.filter(s => s.reg);
+    comTend.slice(0, 24).forEach(function(s){
+      const c = TEND_CLS[s.cls];
+      chips += '<span class="tend-chip" style="border-color:' + c.cor + ';color:' + c.cor + ';">' + escapeHTML(s.eq || '(sem EQUIP)') + ': ' + _tendFmtPct(s.reg.pct) + ' \u00b7 ' + escapeHTML(c.txt) + '</span>';
+    });
+    if (comTend.length > 24) chips += '<span class="tend-chip" style="color:var(--text-muted);">+' + (comTend.length - 24) + ' equipamento(s)</span>';
+    if (!comTend.length) chips = '<span style="font-size:12px;color:var(--text-muted);">Nenhum equipamento com ' + TEND_MIN_PONTOS + ' ou mais amostras datadas \u2014 sem linha de tend\u00eancia.</span>';
+    let leg = '<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--text-soft);margin-top:4px;">';
+    for (const c of ['NORMAL','MONITORAR','CRITICO']){ const ci2 = _tendCatInfo(c); leg += '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:50%;background:' + ci2.cor + ';display:inline-block;"></span>' + escapeHTML(ci2.label) + '</span>'; }
+    leg += '<span style="display:inline-flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:50%;background:#9e9e9e;display:inline-block;"></span>Outros / N/D</span>';
+    leg += '<span><span style="color:#e53935;font-weight:700;">- - -</span> piorando</span><span><span style="color:#1faa59;font-weight:700;">- - -</span> melhorando</span><span><span style="color:#78909c;font-weight:700;">- - -</span> est\u00e1vel (tend\u00eancia por equipamento)</span></div>';
+    return '<div class="tend-chartbox"><div style="font-weight:600;color:var(--teal);font-size:13px;margin-bottom:6px;">' + escapeHTML(a.p.k) + ' \u2014 evolu\u00e7\u00e3o no tempo (' + (a.p.dir === 1 ? 'quanto maior pior' : 'quanto menor pior') + ')</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">' + chips + '</div>' + svg + leg + '</div>';
+  }
+  function _tendCardHTML(c, ci, aberto){
+    let chips = '';
+    for (const k of TEND_CATS){ if (!c.cats[k]) continue; const ci2 = _tendCatInfo(k); chips += '<span class="tend-pill" style="background:' + ci2.cor + ';color:' + (k === 'MONITORAR' ? '#2a2a2a' : '#fff') + ';" title="' + escapeHTML(ci2.label) + '">' + c.cats[k] + '</span>'; }
+    let alerta = '';
+    if (c.nPiorando > 0) alerta = '<span class="tend-b" style="background:#e53935;">\u26A0 ' + c.nPiorando + ' par\u00e2metro(s) piorando</span>';
+    else if (c.params.some(a => a.n > 0)) alerta = '<span class="tend-b" style="background:#78909c;">Sem piora detectada</span>';
+    if (c.nMelhorando > 0) alerta += ' <span class="tend-b" style="background:#1faa59;">' + c.nMelhorando + ' melhorando</span>';
+    const temDados = c.params.some(a => a.n > 0);
+    return '<div class="tend-card' + (aberto ? ' open' : '') + '" id="tendcard-' + ci + '">' +
+      '<div class="tend-head" data-ci="' + ci + '"><span class="tend-caret">\u25B6</span><span class="tend-title">' + escapeHTML(c.nome) + '</span>' + (TEND_DADOS.mostrarTipo ? _tendTipoBadge(c.tipo) : '') +
+      '<span class="tend-meta">' + c.rows.length + ' laudo(s) \u00b7 ' + c.equips.size + ' equip.</span>' + chips +
+      '<span style="margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + alerta + (temDados ? '<button type="button" class="tend-btn-graf" data-ci="' + ci + '" title="Abrir gr\u00e1fico de linha por INTERP_DATE_TIME">\uD83D\uDCC8 Gr\u00e1fico</button>' : '') + '</span></div>' +
+      '<div class="tend-content"' + (aberto ? ' data-ok="1"' : '') + ' style="display:' + (aberto ? 'block' : 'none') + ';">' + (aberto ? renderTendComp(ci) : '') + '</div></div>';
+  }
+  // texto "Como ler" com as regras de cada tipo de laudo ativo
+  function _tendRegrasHTML(tipo){
+    const ps = TEND_PARAMS_TIPO[tipo];
+    const nm = p => p.ord ? (p.k + ' (peso: ' + _tendEscalaOil() + ')') : p.k;
+    return '<b>' + escapeHTML(TEND_TIPOS[tipo].label) + '</b> \u2014 \u2191 <b>quanto maior pior</b>: ' + ps.filter(p => p.dir === 1).map(nm).join(', ') +
+      ' &nbsp;|&nbsp; \u2193 <b>quanto menor pior</b>: ' + ps.filter(p => p.dir === -1).map(nm).join(', ');
+  }
+  function renderizarTendencia(){
+    const body = document.getElementById('tendBody'); if (!body) return;
+    const stats = document.getElementById('tendStats');
+    if (!_tendFontes(true).length){
+      if (stats) stats.innerHTML = '';
+      body.innerHTML = '<div class="dados-placeholder"><div class="big">\uD83D\uDCC8</div><h3>Laudos n\u00e3o carregados</h3><p>Selecione a pasta raiz (com as pastas \u201cLaudos \u00d3leo SOS\u201d e/ou \u201cLaudos Arrefecimento SOS\u201d) e clique em Recarregar.</p></div>';
+      return;
+    }
+    const scrollAnt = body.scrollTop;
+    const r = calcularTendencia(); TEND_DADOS = r;
+    const L = r.catsGlob;
+    if (stats) stats.innerHTML = '<span>\uD83E\uDDE9 Componentes: <b>' + r.comps.length + '</b></span><span>\uD83D\uDCC4 Laudos: <b>' + r.totalLaudos.toLocaleString('pt-BR') + '</b></span><span>\uD83D\uDEE0\uFE0F Equipamentos: <b>' + r.nEquips + '</b></span>';
+    const fi = document.getElementById('tendFiltroInfo');
+    if (fi){
+      const pt = []; for (const c of TEND_MS_ORDEM){ const n = TEND_MS[c].sel.size; if (n) pt.push(n + ' ' + (n === 1 ? TEND_MS[c].label : TEND_MS[c].plural)); }
+      const semModel = _tendFontes(false).some(f => !_tendColModel(f.colunas));
+      fi.textContent = (pt.length ? ('Filtros: ' + pt.join(' \u00b7 ')) : '') + (semModel ? ' \u26A0 coluna MODEL n\u00e3o encontrada em parte dos laudos' : '');
+    }
+    let h = '<div class="summary" style="margin:-16px -25px 14px;">' +
+      '<div class="card"><div class="titulo">\uD83E\uDDE9 Componentes</div><div class="valor">' + r.comps.length + '</div><div class="sub">' + r.nEquips + ' equipamento(s)</div></div>' +
+      '<div class="card"><div class="titulo">\uD83D\uDCC4 Laudos analisados</div><div class="valor">' + r.totalLaudos.toLocaleString('pt-BR') + '</div><div class="sub">Normal ' + L.NORMAL + ' \u00b7 Monitorar ' + L.MONITORAR + ' \u00b7 Cr\u00edtico ' + L.CRITICO + (L.OUTROS ? (' \u00b7 Outros ' + L.OUTROS) : '') + '</div></div>' +
+      '<div class="card" style="border-left-color:#e53935;"><div class="titulo" style="color:#e53935;">\u26A0 Par\u00e2metros piorando</div><div class="valor">' + r.totPior + '</div><div class="sub">em ' + r.compsAlerta + ' componente(s)</div></div>' +
+      '<div class="card" style="border-left-color:#1faa59;"><div class="titulo" style="color:#1faa59;">\u2705 Par\u00e2metros melhorando</div><div class="valor">' + r.totMelhor + '</div><div class="sub">varia\u00e7\u00e3o acima de ' + TEND_LIMIAR + '%</div></div></div>';
+    h += '<div style="font-size:12px;color:var(--text-soft);background:var(--bg-panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.7;">' +
+      '<b style="color:var(--teal);">Como ler:</b><br>' + r.tipos.map(_tendRegrasHTML).join('<br>') + '<br>' +
+      'A tend\u00eancia \u00e9 uma regress\u00e3o linear por equipamento (m\u00edn. ' + TEND_MIN_PONTOS + ' amostras com data); varia\u00e7\u00e3o acima de \u00b1' + TEND_LIMIAR + '% no per\u00edodo, no sentido \u201cpior\u201d, = <b>piorando</b>. Os m\u00edn/m\u00e1x s\u00e3o hist\u00f3ricos, por status do laudo (OVERALL_INTERP), considerando os filtros atuais.' +
+      (r.tipos.indexOf('OLEO') !== -1 ? ' \uD83D\uDD17 = elemento do grupo de inter-rela\u00e7\u00e3o de \u00d3leo (' + TEND_INTER.join(', ') + ').' : '') +
+      (r.mostrarTipo ? '<br>Laudos de \u00d3leo e de Arrefecimento s\u00e3o analisados em cards separados (nunca misturados).' : '') + '</div>';
+    if (!r.comps.length){
+      h += '<div class="dados-placeholder" style="padding:30px;"><div class="big">\uD83D\uDD0D</div><h3>Nenhum componente encontrado</h3><p>Ajuste os filtros de tipo, modelo, equipamento ou componente.</p></div>';
+      body.innerHTML = h; return;
+    }
+    r.comps.forEach(function(c, ci){ h += _tendCardHTML(c, ci, TEND_ABERTOS.has(c.key)); });
+    body.innerHTML = h; body.scrollTop = scrollAnt;
+  }
+  function tendToggleCard(ci){
+    const card = document.getElementById('tendcard-' + ci); if (!card || !TEND_DADOS) return;
+    const comp = TEND_DADOS.comps[ci]; const content = card.querySelector('.tend-content');
+    const abrir = !card.classList.contains('open');
+    card.classList.toggle('open', abrir);
+    if (abrir){
+      if (!content.getAttribute('data-ok')){ content.innerHTML = renderTendComp(ci); content.setAttribute('data-ok', '1'); }
+      content.style.display = 'block'; TEND_ABERTOS.add(comp.key);
+    } else { content.style.display = 'none'; TEND_ABERTOS.delete(comp.key); }
+  }
+  function tendToggleParam(row){
+    const ci = parseInt(row.getAttribute('data-ci'), 10); const pk = row.getAttribute('data-pk');
+    const comp = TEND_DADOS && TEND_DADOS.comps[ci]; if (!comp) return;
+    const cr = row.nextElementSibling; if (!cr || !cr.classList.contains('tend-chart-row')) return;
+    const abrir = cr.style.display === 'none';
+    if (abrir && !cr.getAttribute('data-ok')){
+      const a = comp.params.find(x => x.p.k === pk);
+      cr.firstElementChild.innerHTML = (a && a.n > 0) ? svgTendChart(a) : '';
+      cr.setAttribute('data-ok', '1');
+    }
+    cr.style.display = abrir ? 'table-row' : 'none';
+    row.classList.toggle('tend-row-open', abrir);
+  }
+  function tendOnBodyClick(e){
+    const bt = e.target.closest('.tend-btn-graf');
+    if (bt){ e.stopPropagation(); tendAbrirGrafico(parseInt(bt.getAttribute('data-ci'), 10), bt.getAttribute('data-pk') || ''); return; }
+    const head = e.target.closest('.tend-head');
+    if (head){ tendToggleCard(parseInt(head.getAttribute('data-ci'), 10)); return; }
+    const row = e.target.closest('.tend-row');
+    if (row){ tendToggleParam(row); }
+  }
+  function tendAgendarRender(){ clearTimeout(TEND_TIMER); TEND_TIMER = setTimeout(renderizarTendencia, 150); }
+  function tendSetLimiar(v){ const n = parseFloat(v); TEND_LIMIAR = isNaN(n) ? 10 : n; renderizarTendencia(); }
+  function tendSetTipo(v){ TEND_TIPO = (v === 'OLEO' || v === 'ARREF') ? v : 'TODOS'; tendPopularFiltros(); tendMsCascata(''); TEND_ABERTOS = new Set(); tendAgendarRender(); }
+
+  // ----- Filtros Modelo / Equipamento / Componente: dropdown multiselecao com busca (cascata entre eles) -----
+  const TEND_MS = {
+    MODEL: { label:'modelo',       plural:'modelos',       todos:'Todos os modelos',       sel:new Set(), vis:[] },
+    EQUIP: { label:'equipamento',  plural:'equipamentos',  todos:'Todos os equipamentos',  sel:new Set(), vis:[] },
+    COMP:  { label:'componente',   plural:'componentes',   todos:'Todos os componentes',   sel:new Set(), vis:[] }
+  };
+  const TEND_MS_ORDEM = ['MODEL','EQUIP','COMP'];
+  let TEND_COMBOS = [];
+  function tendPopularFiltros(){
+    // seletor de tipo de laudo (com contagem de registros por pasta)
+    const selT = document.getElementById('tendTipo');
+    if (selT){
+      const fAll = _tendFontes(true); const n = {}; fAll.forEach(f => { n[f.tipo] = f.linhas.length; });
+      selT.innerHTML = '<option value="TODOS">Todos</option>' +
+        '<option value="OLEO"' + (n.OLEO ? '' : ' disabled') + '>\u00d3leo' + (n.OLEO ? ' (' + n.OLEO.toLocaleString('pt-BR') + ')' : ' \u2014 sem dados') + '</option>' +
+        '<option value="ARREF"' + (n.ARREF ? '' : ' disabled') + '>Arrefecimento' + (n.ARREF ? ' (' + n.ARREF.toLocaleString('pt-BR') + ')' : ' \u2014 sem dados') + '</option>';
+      if ((TEND_TIPO === 'OLEO' && !n.OLEO) || (TEND_TIPO === 'ARREF' && !n.ARREF)) TEND_TIPO = 'TODOS';
+      selT.value = TEND_TIPO;
+    }
+    const mapa = new Map();
+    for (const f of _tendFontes(false)){
+      const colM = _tendColModel(f.colunas);
+      for (const l of f.linhas){
+        const m = colM ? _tendStr(l[colM]) : ''; const e = _tendStr(l['EQUIP_NUMBER']); const c = _tendStr(l['COMP_DESC']);
+        const k = m + '\u0001' + e + '\u0001' + c;
+        if (!mapa.has(k)) mapa.set(k, { MODEL:m, EQUIP:e, COMP:c });
+      }
+    }
+    TEND_COMBOS = Array.from(mapa.values());
+    for (const campo of TEND_MS_ORDEM){
+      const validos = new Set(); for (const o of TEND_COMBOS){ if (o[campo]) validos.add(o[campo]); }
+      for (const v of Array.from(TEND_MS[campo].sel)){ if (!validos.has(v)) TEND_MS[campo].sel.delete(v); }
+      tendMsResumo(campo);
+    }
+  }
+  // valores disponiveis de um campo = combinacoes que atendem as selecoes dos OUTROS dois campos
+  function _tendDisp(campo, incluirSel){
+    const outros = TEND_MS_ORDEM.filter(c => c !== campo && TEND_MS[c].sel.size);
+    const set = new Set();
+    for (const o of TEND_COMBOS){
+      let ok = true;
+      for (const c of outros){ if (!TEND_MS[c].sel.has(o[c])) { ok = false; break; } }
+      if (ok && o[campo]) set.add(o[campo]);
+    }
+    if (incluirSel) TEND_MS[campo].sel.forEach(v => set.add(v));
+    return Array.from(set).sort((a,b) => a.localeCompare(b, 'pt-BR', { numeric:true }));
+  }
+  function tendMsCascata(origem){
+    let mudou = true, guarda = 0;
+    while (mudou && guarda++ < 5){
+      mudou = false;
+      for (const c of TEND_MS_ORDEM){
+        if (c === origem || !TEND_MS[c].sel.size) continue;
+        const disp = new Set(_tendDisp(c, false));
+        for (const v of Array.from(TEND_MS[c].sel)){ if (!disp.has(v)) { TEND_MS[c].sel.delete(v); mudou = true; } }
+      }
+    }
+    for (const c of TEND_MS_ORDEM){
+      tendMsResumo(c);
+      const p = document.getElementById('tendMsPanel-' + c);
+      if (p && p.style.display !== 'none') tendMsRenderLista(c);
+    }
+  }
+  function tendMsResumo(campo){
+    const el = document.getElementById('tendMsRes-' + campo); if (!el) return;
+    const cfg = TEND_MS[campo]; const n = cfg.sel.size;
+    el.textContent = n === 0 ? cfg.todos : (n <= 2 ? Array.from(cfg.sel).join(', ') : (n + ' ' + cfg.plural + ' selecionados'));
+  }
+  function tendMsToggle(campo){
+    const p = document.getElementById('tendMsPanel-' + campo); if (!p) return;
+    const abrir = p.style.display === 'none';
+    for (const c of TEND_MS_ORDEM){ const o = document.getElementById('tendMsPanel-' + c); if (o) o.style.display = 'none'; }
+    if (abrir){ p.style.display = 'block'; tendMsRenderLista(campo); const b = document.getElementById('tendMsBusca-' + campo); if (b) b.focus(); }
+  }
+  function tendMsRenderLista(campo){
+    const lista = document.getElementById('tendMsLista-' + campo); if (!lista) return;
+    const cfg = TEND_MS[campo];
+    const busca = ((document.getElementById('tendMsBusca-' + campo).value) || '').toLowerCase().trim();
+    const todos = _tendDisp(campo, true);
+    const filtrados = busca ? todos.filter(v => v.toLowerCase().indexOf(busca) !== -1) : todos;
+    cfg.vis = filtrados;
+    const sel = cfg.sel;
+    const ord = filtrados.filter(v => sel.has(v)).concat(filtrados.filter(v => !sel.has(v)));
+    const exib = ord.slice(0, 500);
+    let html = '';
+    if (!exib.length) html = '<div class="ms-vazio">' + (campo === 'MODEL' && !_tendFontes(false).some(f => _tendColModel(f.colunas)) ? 'Coluna MODEL n\u00e3o encontrada nos laudos.' : 'Nenhum ' + cfg.label + ' encontrado.') + '</div>';
+    for (const v of exib){ html += '<label class="ms-item"><input type="checkbox" data-ms="' + campo + '" data-v="' + escapeHTML(v) + '"' + (sel.has(v) ? ' checked' : '') + '><span>' + escapeHTML(v) + '</span></label>'; }
+    if (ord.length > 500) html += '<div class="ms-vazio">Exibindo 500 de ' + ord.length + ' \u2014 refine a busca.</div>';
+    lista.innerHTML = html;
+  }
+  function tendMsMarcar(campo, marcar){
+    const cfg = TEND_MS[campo];
+    if (marcar) cfg.vis.forEach(v => cfg.sel.add(v)); else cfg.sel.clear();
+    tendMsCascata(campo); tendMsRenderLista(campo); tendAgendarRender();
+  }
+  function tendLimparFiltros(){
+    for (const c of TEND_MS_ORDEM){ TEND_MS[c].sel.clear(); const b = document.getElementById('tendMsBusca-' + c); if (b) b.value = ''; }
+    TEND_TIPO = 'TODOS'; tendPopularFiltros();
+    tendMsCascata(''); tendAgendarRender();
+  }
+
+  // ----- Grafico de linhas generico (SVG) -----
+  function _tendLblData(t, comHora){
+    const d = new Date(t); const p2 = n => String(n).padStart(2,'0');
+    if (comHora) return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + ' ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+    return p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2);
+  }
+  // series: [{ cor, w, r, pts:[{t,v,cat,tip}], reg, tendTip }]   opt: { tend, status, y0, y1, yTicks, padL, yLabel, fmtY }
+  function svgTendLinhas(series, opt){
+    const W = 1000, H = 440, padL = opt.padL || 62, padR = 22, padT = 18, padB = 52;
+    const plotW = W - padL - padR, plotH = H - padT - padB; const DIA = 86400000;
+    let tmin = Infinity, tmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+    for (const s of series) for (const pt of s.pts){ if (pt.t < tmin) tmin = pt.t; if (pt.t > tmax) tmax = pt.t; if (pt.v < ymin) ymin = pt.v; if (pt.v > ymax) ymax = pt.v; }
+    if (!isFinite(tmin)) return '<div style="color:var(--text-muted);font-size:13px;padding:30px;text-align:center;">Nenhum ponto para exibir com os filtros atuais.</div>';
+    const dataMin = ymin;
+    if (opt.y0 !== undefined){ ymin = opt.y0; ymax = opt.y1; }
+    else {
+      if (opt.tend){ for (const s of series){ if (!s.reg) continue; const y1 = s.reg.b, y2 = s.reg.a * s.reg.xEnd + s.reg.b; ymin = Math.min(ymin, y1, y2); ymax = Math.max(ymax, y1, y2); } }
+      if (ymin === ymax){ const d = Math.abs(ymin) * 0.1 || 1; ymin -= d; ymax += d; } else { const pad = (ymax - ymin) * 0.08; ymin -= pad; ymax += pad; }
+      if (dataMin >= 0 && ymin < 0) ymin = 0;
+    }
+    const fmtY = opt.fmtY || _tendFmt;
+    const spanT = tmax - tmin; const comHora = spanT < 2 * DIA;
+    const xFor = t => spanT === 0 ? (padL + plotW / 2) : (padL + (t - tmin) / spanT * plotW);
+    const yFor = v => padT + plotH - (v - ymin) / (ymax - ymin) * plotH;
+    let grid = '', ylab = '', xlab = '';
+    const yTicks = opt.yTicks || [0,1,2,3,4,5].map(g => ymin + (ymax - ymin) * g / 5);
+    for (const val of yTicks){
+      const y = yFor(val);
+      grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (W - padR) + '" y2="' + y.toFixed(1) + '" stroke="#eee"/>';
+      ylab += '<text x="' + (padL - 7) + '" y="' + (y + 3).toFixed(1) + '" font-size="10" text-anchor="end" fill="#666">' + escapeHTML(fmtY(val)) + '</text>';
+    }
+    const nTicks = spanT === 0 ? 1 : 8;
+    for (let g = 0; g < nTicks; g++){
+      const t = spanT === 0 ? tmin : (tmin + spanT * g / (nTicks - 1)); const x = xFor(t);
+      grid += '<line x1="' + x.toFixed(1) + '" y1="' + padT + '" x2="' + x.toFixed(1) + '" y2="' + (padT + plotH) + '" stroke="#f3f3f3"/>';
+      xlab += '<line x1="' + x.toFixed(1) + '" y1="' + (padT + plotH) + '" x2="' + x.toFixed(1) + '" y2="' + (padT + plotH + 4) + '" stroke="#ccc"/>' +
+              '<text x="' + x.toFixed(1) + '" y="' + (padT + plotH + 17) + '" font-size="10" text-anchor="middle" fill="#666">' + _tendLblData(t, comHora) + '</text>';
+    }
+    const axis = '<line x1="' + padL + '" y1="' + padT + '" x2="' + padL + '" y2="' + (padT + plotH) + '" stroke="#bbb"/><line x1="' + padL + '" y1="' + (padT + plotH) + '" x2="' + (W - padR) + '" y2="' + (padT + plotH) + '" stroke="#bbb"/>';
+    let linhas = '', tend = '', pontos = '';
+    for (const s of series){
+      if (s.pts.length >= 2) linhas += '<polyline fill="none" stroke="' + s.cor + '" stroke-width="' + (s.w || 1.8) + '" stroke-linejoin="round" points="' + s.pts.map(pt => xFor(pt.t).toFixed(1) + ',' + yFor(pt.v).toFixed(1)).join(' ') + '"/>';
+      if (opt.tend && s.reg){
+        tend += '<line x1="' + xFor(s.reg.t0).toFixed(1) + '" y1="' + yFor(s.reg.b).toFixed(1) + '" x2="' + xFor(s.reg.t0 + s.reg.xEnd * DIA).toFixed(1) + '" y2="' + yFor(s.reg.a * s.reg.xEnd + s.reg.b).toFixed(1) + '" stroke="' + s.cor + '" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.75"><title>' + escapeHTML(s.tendTip || '') + '</title></line>';
+      }
+      for (const pt of s.pts){
+        const fill = opt.status ? _tendCatInfo(pt.cat).cor : s.cor; const stroke = opt.status ? s.cor : '#fff';
+        pontos += '<circle cx="' + xFor(pt.t).toFixed(1) + '" cy="' + yFor(pt.v).toFixed(1) + '" r="' + (s.r || 4.6) + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="' + (opt.status ? 2 : 1) + '"><title>' + escapeHTML(pt.tip || '') + '</title></circle>';
+      }
+    }
+    return '<svg width="100%" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet">' + grid + axis + ylab + xlab + linhas + tend + pontos +
+      '<text x="14" y="' + (padT + plotH / 2) + '" font-size="11" fill="#666" text-anchor="middle" transform="rotate(-90 14 ' + (padT + plotH / 2) + ')">' + escapeHTML(opt.yLabel || '') + '</text></svg>';
+  }
+
+  // ----- Modal: grafico de linha no horizonte de INTERP_DATE_TIME -----
+  const TEND_PALETA = ['#1565c0','#ef6c00','#6a1b9a','#00838f','#c2185b','#558b2f','#5d4037','#455a64','#d84315','#283593','#00695c','#9e9d24'];
+  let TEND_MODAL = { ci:-1, pk:'', ocultos:new Set(), eqList:[], elList:[], eq:'' };
+  function tendAbrirGrafico(ci, pk){
+    const comp = TEND_DADOS && TEND_DADOS.comps[ci]; if (!comp) return;
+    const comDados = comp.params.filter(a => a.n > 0);
+    const I = _tendInterGet(comp);
+    if (!comDados.length){ alert('Este componente n\u00e3o possui par\u00e2metros com valores v\u00e1lidos.'); return; }
+    if (pk === '__INTER__' && !I) pk = '';
+    if (pk !== '__INTER__' && !comDados.some(a => a.p.k === pk)){ const f = comDados.find(a => a.cls === 'PIORANDO') || comDados[0]; pk = f.p.k; }
+    TEND_MODAL = { ci:ci, pk:pk, ocultos:new Set(), eqList:[], elList:[], eq:'' };
+    document.getElementById('tendModalTitulo').textContent = '\uD83D\uDCC8 Tend\u00eancia por INTERP_DATE_TIME \u2014 ' + comp.nome + (TEND_DADOS.mostrarTipo ? (' (' + TEND_TIPOS[comp.tipo].label + ')') : '');
+    const sel = document.getElementById('tendModalParam');
+    let opts = '';
+    if (I) opts += '<option value="__INTER__">\uD83D\uDD17 Inter-rela\u00e7\u00e3o (normalizado)</option>';
+    opts += comDados.map(a => '<option value="' + escapeHTML(a.p.k) + '">' + escapeHTML(a.p.k) + (a.p.dir === 1 ? '  (maior pior' : '  (menor pior') + (a.p.ord ? ' \u00b7 peso' : '') + ')</option>').join('');
+    sel.innerHTML = opts; sel.value = pk;
+    document.getElementById('tendModalDe').value = '';
+    document.getElementById('tendModalAte').value = '';
+    document.getElementById('tendModalTend').checked = true;
+    document.getElementById('modalTendGrafico').classList.add('show');
+    tendModalRender();
+  }
+  function tendFecharGrafico(){ const m = document.getElementById('modalTendGrafico'); if (m) m.classList.remove('show'); }
+  function tendModalMudarParam(){ TEND_MODAL.pk = document.getElementById('tendModalParam').value; TEND_MODAL.ocultos = new Set(); tendModalRender(); }
+  function tendModalMudarEq(){ TEND_MODAL.eq = document.getElementById('tendModalEq').value; tendModalRender(); }
+  function tendModalLimparPeriodo(){ document.getElementById('tendModalDe').value = ''; document.getElementById('tendModalAte').value = ''; tendModalRender(); }
+  function tendModalToggleEq(i){ const eq = TEND_MODAL.eqList[i]; if (eq === undefined) return; if (TEND_MODAL.ocultos.has(eq)) TEND_MODAL.ocultos.delete(eq); else TEND_MODAL.ocultos.add(eq); tendModalRender(); }
+  function tendModalToggleEl(i){ const k = TEND_MODAL.elList[i]; if (k === undefined) return; if (TEND_MODAL.ocultos.has(k)) TEND_MODAL.ocultos.delete(k); else TEND_MODAL.ocultos.add(k); tendModalRender(); }
+  function tendModalToggleIdx(){ if (TEND_MODAL.ocultos.has('__IDX__')) TEND_MODAL.ocultos.delete('__IDX__'); else TEND_MODAL.ocultos.add('__IDX__'); tendModalRender(); }
+  function _tendPeriodo(){
+    const de = document.getElementById('tendModalDe').value; const ate = document.getElementById('tendModalAte').value;
+    return { de: de ? new Date(de + 'T00:00:00').getTime() : null, ate: ate ? new Date(ate + 'T23:59:59.999').getTime() : null };
+  }
+  function tendModalRender(){
+    const comp = TEND_DADOS && TEND_DADOS.comps[TEND_MODAL.ci]; if (!comp) return;
+    const inter = TEND_MODAL.pk === '__INTER__';
+    const wEq = document.getElementById('tendModalEqWrap'); if (wEq) wEq.style.display = inter ? 'block' : 'none';
+    if (inter) tendModalRenderInter(comp); else tendModalRenderParam(comp);
+  }
+  function tendModalRenderParam(comp){
+    const pk = TEND_MODAL.pk; const pa = comp.params.find(x => x.p.k === pk); if (!pa) return; const p = pa.p;
+    const per = _tendPeriodo(); const mostrarTend = document.getElementById('tendModalTend').checked;
+    const porEq = new Map(); const todosEq = new Set(); let semData = 0;
+    for (const r of comp.rows){
+      const v = r.vals[pk]; if (v === undefined) continue;
+      if (r.ti === null){ semData++; continue; }
+      todosEq.add(r.eq);
+      if (per.de !== null && r.ti < per.de) continue; if (per.ate !== null && r.ti > per.ate) continue;
+      if (!porEq.has(r.eq)) porEq.set(r.eq, []);
+      porEq.get(r.eq).push({ t:r.ti, v:v, cat:r.cat, eq:r.eq, id:r.id, model:r.model });
+    }
+    const eqList = Array.from(todosEq).sort((a,b) => a.localeCompare(b, 'pt-BR', { numeric:true }));
+    TEND_MODAL.eqList = eqList;
+    const cores = {}; eqList.forEach((e, i) => { cores[e] = TEND_PALETA[i % TEND_PALETA.length]; });
+    const series = []; let nPts = 0, tmin = Infinity, tmax = -Infinity, vmin = Infinity, vmax = -Infinity;
+    for (const eq of eqList){
+      const pts = (porEq.get(eq) || []).sort((a,b) => a.t - b.t);
+      if (!TEND_MODAL.ocultos.has(eq) && pts.length){
+        const reg = _tendRegressao(pts);
+        pts.forEach(pt => { pt.tip = (pt.eq || '(sem EQUIP)') + (pt.model ? (' \u00b7 ' + pt.model) : '') + ' \u00b7 ' + formatarDataBR(new Date(pt.t)) + ' \u00b7 ' + _tendCatInfo(pt.cat).label + ' \u00b7 ' + p.k + ' = ' + _tendFmtP(p, pt.v) + (pt.id ? (' \u00b7 ' + pt.id) : ''); });
+        series.push({ eq:eq, cor:cores[eq], pts:pts, reg:reg, tendTip:(eq || '(sem EQUIP)') + (reg ? (': ' + _tendFmtPct(reg.pct) + ' no per\u00edodo') : '') });
+        for (const pt of pts){ nPts++; if (pt.t < tmin) tmin = pt.t; if (pt.t > tmax) tmax = pt.t; if (pt.v < vmin) vmin = pt.v; if (pt.v > vmax) vmax = pt.v; }
+      }
+    }
+    let leg = '';
+    eqList.forEach(function(eq, i){
+      const n = (porEq.get(eq) || []).length; const off = TEND_MODAL.ocultos.has(eq);
+      leg += '<span class="tend-leg-chip' + (off ? ' off' : '') + '" onclick="tendModalToggleEq(' + i + ')" title="Clique para ' + (off ? 'mostrar' : 'ocultar') + '"><span class="tend-leg-dot" style="background:' + cores[eq] + ';"></span>' + escapeHTML(eq || '(sem EQUIP)') + ' <span style="color:var(--text-muted);">(' + n + ')</span></span>';
+    });
+    document.getElementById('tendModalLegenda').innerHTML = leg || '<span style="font-size:12px;color:var(--text-muted);">Sem equipamentos com ' + escapeHTML(pk) + ' e INTERP_DATE_TIME.</span>';
+    const opt = { tend:mostrarTend, status:true, yLabel:p.k };
+    if (p.ord){   // OIL_APPEAR: eixo Y fixo nos pesos 1-5, com o texto de cada peso
+      let lo = 0.6, hi = 5.4;
+      if (mostrarTend){ for (const s of series){ if (!s.reg) continue; const y1 = s.reg.b, y2 = s.reg.a * s.reg.xEnd + s.reg.b; lo = Math.min(lo, y1 - 0.1, y2 - 0.1); hi = Math.max(hi, y1 + 0.1, y2 + 0.1); } }
+      opt.y0 = lo; opt.y1 = hi; opt.yTicks = [1,2,3,4,5]; opt.padL = 104; opt.fmtY = v => _tendFmtP(p, v);
+    }
+    document.getElementById('tendModalChart').innerHTML = svgTendLinhas(series, opt);
+    let info = nPts ? (nPts.toLocaleString('pt-BR') + ' amostra(s) \u00b7 ' + formatarDataBR(new Date(tmin)) + ' a ' + formatarDataBR(new Date(tmax)) + ' \u00b7 M\u00edn ' + _tendFmtP(p, vmin) + ' \u00b7 M\u00e1x ' + _tendFmtP(p, vmax)) : '0 amostra(s)';
+    if (semData) info += ' \u00b7 ' + semData + ' amostra(s) sem INTERP_DATE_TIME n\u00e3o aparecem';
+    document.getElementById('tendModalInfo').textContent = info;
+    document.getElementById('tendModalNota').innerHTML =
+      '<span><b>Cor do ponto = status do laudo:</b></span>' +
+      ['NORMAL','MONITORAR','CRITICO'].map(c => { const ci2 = _tendCatInfo(c); return '<span style="display:inline-flex;align-items:center;gap:5px;"><span class="tend-leg-dot" style="background:' + ci2.cor + ';"></span>' + escapeHTML(ci2.label) + '</span>'; }).join('') +
+      '<span style="display:inline-flex;align-items:center;gap:5px;"><span class="tend-leg-dot" style="background:#9e9e9e;"></span>Outros / N/D</span>' +
+      '<span>\u00b7 <b>Cor da linha/borda = equipamento</b> (clique na legenda para ocultar/mostrar) \u00b7 tracejado = tend\u00eancia</span>' +
+      (p.ord ? '<span>\u00b7 <b>Peso:</b> ' + escapeHTML(_tendEscalaOil()) + ' (maior = pior)</span>' : '');
+  }
+  function tendModalRenderInter(comp){
+    const I = _tendInterGet(comp); const chart = document.getElementById('tendModalChart');
+    if (!I){ chart.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-muted);">Dados insuficientes para a inter-rela\u00e7\u00e3o.</div>'; return; }
+    const per = _tendPeriodo(); const mostrarTend = document.getElementById('tendModalTend').checked;
+    const cont = new Map(); let semData = 0;
+    for (const am of I.amostras){ if (am.r.ti === null){ semData++; continue; } cont.set(am.r.eq, (cont.get(am.r.eq) || 0) + 1); }
+    const eqs = Array.from(cont.keys()).sort((a,b) => a.localeCompare(b, 'pt-BR', { numeric:true }));
+    const selEq = document.getElementById('tendModalEq');
+    if (!eqs.length){
+      selEq.innerHTML = ''; document.getElementById('tendModalLegenda').innerHTML = '';
+      chart.innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-muted);">Nenhuma amostra com INTERP_DATE_TIME para este componente.</div>';
+      document.getElementById('tendModalInfo').textContent = ''; document.getElementById('tendModalNota').innerHTML = ''; return;
+    }
+    if (!TEND_MODAL.eq || !cont.has(TEND_MODAL.eq)){ let best = eqs[0]; for (const e of eqs){ if (cont.get(e) > cont.get(best)) best = e; } TEND_MODAL.eq = best; }
+    selEq.innerHTML = eqs.map(e => '<option value="' + escapeHTML(e) + '">' + escapeHTML(e || '(sem EQUIP)') + ' (' + cont.get(e) + ')</option>').join('');
+    selEq.value = TEND_MODAL.eq;
+    const am = I.amostras.filter(x => x.r.ti !== null && x.r.eq === TEND_MODAL.eq && (per.de === null || x.r.ti >= per.de) && (per.ate === null || x.r.ti <= per.ate)).sort((a,b) => a.r.ti - b.r.ti);
+    TEND_MODAL.elList = I.elems.map(p => p.k);
+    const cor = {}; I.elems.forEach((p, i) => { cor[p.k] = TEND_PALETA[i % TEND_PALETA.length]; });
+    const series = [];
+    I.elems.forEach(function(p){
+      if (TEND_MODAL.ocultos.has(p.k)) return;
+      const pts = []; for (const x of am){ if (x.s[p.k] !== undefined){ const v = x.s[p.k] * 100; pts.push({ t:x.r.ti, v:v, cat:x.r.cat, tip:p.k + ' (' + (p.dir === 1 ? 'maior pior' : 'menor pior') + ') \u00b7 ' + formatarDataBR(new Date(x.r.ti)) + ' \u00b7 valor ' + _tendFmt(x.r.vals[p.k]) + ' \u00b7 severidade ' + v.toFixed(0) + '%' + (x.r.id ? (' \u00b7 ' + x.r.id) : '') }); } }
+      if (pts.length) series.push({ cor:cor[p.k], w:1.6, r:3.4, pts:pts, reg:mostrarTend ? _tendRegressao(pts) : null, tendTip:p.k });
+    });
+    if (!TEND_MODAL.ocultos.has('__IDX__')){
+      const pts = am.map(x => ({ t:x.r.ti, v:x.idx * 100, cat:x.r.cat, tip:'\u00cdndice composto \u00b7 ' + formatarDataBR(new Date(x.r.ti)) + ' \u00b7 severidade ' + (x.idx * 100).toFixed(0) + '% \u00b7 ' + _tendCatInfo(x.r.cat).label + (x.r.id ? (' \u00b7 ' + x.r.id) : '') }));
+      if (pts.length){ const reg = _tendRegressao(pts); series.push({ cor:'#212121', w:3.2, r:4.8, pts:pts, reg:mostrarTend ? reg : null, tendTip:'\u00cdndice composto' + (reg ? (': ' + _tendFmtPP(reg.a * reg.xEnd) + ' no per\u00edodo') : '') }); }
+    }
+    let leg = '';
+    I.elems.forEach(function(p, i){
+      const off = TEND_MODAL.ocultos.has(p.k);
+      leg += '<span class="tend-leg-chip' + (off ? ' off' : '') + '" onclick="tendModalToggleEl(' + i + ')" title="' + (p.dir === 1 ? 'Quanto maior pior' : 'Quanto menor pior') + ' \u2014 clique para ' + (off ? 'mostrar' : 'ocultar') + '"><span class="tend-leg-dot" style="background:' + cor[p.k] + ';"></span>' + escapeHTML(p.k) + ' ' + (p.dir === 1 ? '\u2191' : '\u2193') + '</span>';
+    });
+    const offI = TEND_MODAL.ocultos.has('__IDX__');
+    leg += '<span class="tend-leg-chip' + (offI ? ' off' : '') + '" style="font-weight:700;" onclick="tendModalToggleIdx()"><span class="tend-leg-dot" style="background:#212121;"></span>\u00cdndice composto</span>';
+    document.getElementById('tendModalLegenda').innerHTML = leg;
+    chart.innerHTML = svgTendLinhas(series, { tend:mostrarTend, status:false, y0:0, y1:100, yLabel:'Severidade (0 = melhor \u00b7 100 = pior do hist\u00f3rico)', fmtY:v => Math.round(v) + '%' });
+    let info = am.length ? (am.length + ' amostra(s) de ' + (TEND_MODAL.eq || '(sem EQUIP)') + ' \u00b7 ' + formatarDataBR(new Date(am[0].r.ti)) + ' a ' + formatarDataBR(new Date(am[am.length - 1].r.ti)) + ' \u00b7 \u00cdndice atual ' + Math.round(am[am.length - 1].idx * 100) + '%') : '0 amostra(s)';
+    if (semData) info += ' \u00b7 ' + semData + ' amostra(s) sem INTERP_DATE_TIME n\u00e3o aparecem';
+    document.getElementById('tendModalInfo').textContent = info;
+    document.getElementById('tendModalNota').innerHTML =
+      '<span><b>Todas as linhas na mesma escala de severidade:</b> subir = piorar, respeitando a regra de cada elemento (\u2191 maior pior / \u2193 menor pior).</span>' +
+      '<span>\u00b7 Normalizado pelo hist\u00f3rico de ' + escapeHTML(comp.nome) + ' \u00b7 linha preta = m\u00e9dia dos elementos (\u00edndice composto) \u00b7 tracejado = tend\u00eancia</span>';
+  }
+  (function tendInit(){
+    const b = document.getElementById('tendBody'); if (b) b.addEventListener('click', tendOnBodyClick);
+    const tb = document.getElementById('tendToolbar');
+    if (tb) tb.addEventListener('change', function(e){
+      const cb = e.target; if (!cb || !cb.getAttribute) return;
+      const campo = cb.getAttribute('data-ms'); if (!campo || !TEND_MS[campo]) return;
+      const v = cb.getAttribute('data-v');
+      if (cb.checked) TEND_MS[campo].sel.add(v); else TEND_MS[campo].sel.delete(v);
+      tendMsCascata(campo); tendAgendarRender();
+    });
+    document.addEventListener('click', function(e){
+      for (const c of TEND_MS_ORDEM){
+        const w = document.getElementById('tendMs-' + c); const p = document.getElementById('tendMsPanel-' + c);
+        if (w && p && p.style.display !== 'none' && !w.contains(e.target)) p.style.display = 'none';
+      }
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key !== 'Escape') return; const m = document.getElementById('modalTendGrafico');
+      if (m && m.classList.contains('show')) tendFecharGrafico();
+    });
+  })();
+  async function _tendCarregarFontes(forcar){
+    for (const t of ['BASE','ARREF']){
+      if (forcar) DADOS[t].carregado = false;
+      if (!DADOS[t].carregado){ try { await carregarDados(t); } catch (e) {} }
+    }
+  }
+  async function mudarTelaTendencia(){
+    mudarModo('TENDENCIA'); atualizarMenuAtivo();
+    TEND_ABERTOS = new Set();   // sempre inicia com os componentes recolhidos
+    const body = document.getElementById('tendBody'); const tb = document.getElementById('tendToolbar');
+    if (!diretorioHandle){
+      if (tb) tb.style.display = 'none';
+      document.getElementById('tendStats').innerHTML = '';
+      body.innerHTML = '<div class="dados-placeholder"><div class="big">\uD83D\uDCC1</div><h3>Selecione uma pasta raiz primeiro</h3><p>Volte ao modo Arquivos e selecione a pasta raiz.</p></div>';
+      return;
+    }
+    if (tb) tb.style.display = 'flex';
+    if (!DADOS.BASE.carregado || !DADOS.ARREF.carregado){
+      body.innerHTML = '<div class="dados-placeholder"><div class="big">\u23F3</div><h3>Carregando laudos...</h3><p>Consolidando os registros (\u00d3leo e Arrefecimento).</p></div>';
+      await _tendCarregarFontes(false);
+    }
+    tendPopularFiltros();
+    renderizarTendencia();
+  }
+  async function recarregarTendencia(){
+    if (!diretorioHandle){ setStatus('Selecione uma pasta raiz primeiro.'); return; }
+    mostrarLoading('Recarregando laudos (\u00d3leo e Arrefecimento)...');
+    await _tendCarregarFontes(true);
+    esconderLoading('\u2705 ' + (DADOS.BASE.linhas.length + DADOS.ARREF.linhas.length).toLocaleString('pt-BR') + ' registro(s) carregado(s)');
+    TEND_ABERTOS = new Set();
+    tendPopularFiltros();
+    renderizarTendencia();
+  }
+
+  // ==================== RELATORIO ====================
   let RELATORIO_TAG = ''; let RELATORIO_COMP = '';
   const ELEMENTOS_RELATORIO = ['Cu','Fe','Cr','Al','Pb','Sn','Si','Na','K','B','Mo','Ni','Ag','Ti','V','Mn','Ca','Mg','Zn','P','Ba'];
   const ELEMENTOS_CONDICAO = ['ST','OXI','NIT','SUL','PFC','V100','TBN'];
@@ -3771,6 +4815,7 @@ for (const linha of d.linhas) {
   }
   function montarRelatorioHTML(tag, comp, opcoes){
     opcoes = opcoes || {}; const incluirCMA = (opcoes.incluirCMA !== false);
+    if (opcoes.tipo === 'ARREF') return montarRelatorioArrefHTML(tag, comp, opcoes);
     const colunas = (DADOS.BASE&&DADOS.BASE.colunas)?DADOS.BASE.colunas:[];
     let linhas = _baseLinhas().filter(l => String(l['EQUIP_NUMBER']==null?'':l['EQUIP_NUMBER']).trim()===tag && String(l['COMP_DESC']==null?'':l['COMP_DESC']).trim()===comp);
     linhas.sort((a,b)=>{ const da=_dataLaudo(a), db=_dataLaudo(b); if(da&&db) return da-db; if(da) return -1; if(db) return 1; return 0; });
@@ -3821,17 +4866,79 @@ for (const linha of d.linhas) {
     if(incluirCMA){ html += secaoBacklogCMA(); }
     return html;
   }
-  function svgLineChart(titulo, pontos){
-    const W=560,H=240,padL=52,padR=16,padT=28,padB=64;
+  // ===== Verificar Relatorio - laudos de Arrefecimento (OIL_APPEAR, pH, Na, GL) =====
+  function montarRelatorioArrefHTML(tag, comp, opcoes){
+    const colunas = (DADOS.ARREF && DADOS.ARREF.colunas) ? DADOS.ARREF.colunas : [];
+    const linhas = ((DADOS.ARREF && DADOS.ARREF.linhas) ? DADOS.ARREF.linhas : []).filter(l => String(l['EQUIP_NUMBER']==null?'':l['EQUIP_NUMBER']).trim()===tag && String(l['COMP_DESC']==null?'':l['COMP_DESC']).trim()===comp);
+    linhas.sort((a,b)=>{ const da=_dataLaudo(a), db=_dataLaudo(b); if(da&&db) return da-db; if(da) return -1; if(db) return 1; return 0; });
+    if(linhas.length===0){ return '<div class="dados-placeholder"><div class="big">\uD83D\uDCED</div><h3>Sem laudos de Arrefecimento</h3><p>Nenhum laudo de Arrefecimento encontrado para essa TAG e componente.</p></div>'; }
+    const colFiltro = _acharColElemento(colunas, 'FILTER_CHANGED');
+    let html = '';
+    html += '<div style="margin-bottom:16px;"><h2 style="color:var(--teal);">\uD83D\uDCC8 '+escapeHTML(tag)+' \u2014 '+escapeHTML(comp)+' <span style="background:#00838f;color:#fff;font-size:11px;padding:2px 10px;border-radius:12px;vertical-align:middle;">\uD83E\uDDCA Arrefecimento</span></h2><div style="color:var(--text-soft); font-size:13px;">'+linhas.length+' laudo(s) de Arrefecimento encontrado(s)</div></div>';
+    html += '<h3 style="color:var(--teal); margin:12px 0 8px;">\uD83D\uDD0E Hist\u00f3rico OVERALL_INTERP</h3>';
+    html += '<div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; align-items:flex-end;">';
+    for(const l of linhas){ const d=_dataLaudo(l); const dl = d?formatarDataBR(d):''; html += '<div style="display:flex; flex-direction:column; align-items:center; gap:3px;">'+badgeOverallInterp(l['OVERALL_INTERP'])+'<span style="font-size:10px; color:var(--text-soft);">'+escapeHTML(dl)+'</span></div>'; }
+    html += '</div>';
+    html += '<h3 style="color:var(--teal); margin:14px 0 8px;">\uD83D\uDCDD Interpreta\u00e7\u00f5es</h3>';
+    html += '<div style="overflow:auto; border:1px solid var(--border); border-radius:6px; margin-bottom:16px;"><table class="dados-table" style="min-width:100%;"><thead><tr><th style="width:150px;">Data</th><th style="width:180px;">Amostra</th><th style="width:120px;">Laudo</th>' + (colFiltro ? '<th style="width:120px;">Filtro Trocado</th>' : '') + '<th>INTERPRETATION_TEXT</th></tr></thead><tbody>';
+    for(const l of linhas){ const d=_dataLaudo(l); const ic = _temControle(l['TEXT_ID']) ? '<span title="Possui controle registrado" style="color:var(--success); margin-right:5px;">\uD83E\uDDEA</span>' : ''; html += '<tr><td>'+escapeHTML(d?formatarDataBR(d):'')+'</td><td>'+ic+escapeHTML(String(l['TEXT_ID']||''))+'</td><td>'+badgeOverallInterp(l['OVERALL_INTERP'])+'</td>' + (colFiltro ? ('<td>'+_filterChangedTxt(l[colFiltro])+'</td>') : '') + '<td style="white-space:normal;">'+escapeHTML(String(l['INTERPRETATION_TEXT']||''))+'</td></tr>'; }
+    html += '</tbody></table></div>';
+    html += '<h3 style="color:var(--teal); margin:14px 0 8px;">\uD83E\uDDEA Controles Registrados</h3>';
+    const ctrlRows = [];
+    for(const l of linhas){ const chave = normalizarChave(l['TEXT_ID']); const ctrls = CONTROLE_INDEX.has(chave)?CONTROLE_INDEX.get(chave):[]; for(const ct of ctrls){ ctrlRows.push({amostra:l['TEXT_ID'], ct}); } }
+    if(ctrlRows.length===0){ html += '<div style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">Nenhum controle registrado para este conjunto.</div>'; }
+    else { html += '<div style="overflow:auto; border:1px solid var(--border); border-radius:6px; margin-bottom:16px;"><table class="dados-table" style="min-width:100%;"><thead><tr><th style="width:180px;">Amostra</th><th style="width:110px;">A\u00e7\u00e3o</th><th style="width:120px;">Nota/Ordem</th><th style="width:200px;">Avalia\u00e7\u00e3o Analista</th><th>Observa\u00e7\u00e3o</th><th>Coment\u00e1rio</th></tr></thead><tbody>';
+      for(const r of ctrlRows){ const ct=r.ct; html += '<tr><td>'+escapeHTML(String(r.amostra||''))+'</td><td>'+escapeHTML(String(ct['A\u00e7\u00e3o']||''))+'</td><td>'+escapeHTML(String(ct['Nota/Ordem']||''))+'</td><td>'+escapeHTML(String(ct['Avalia\u00e7\u00e3o Analista']||''))+'</td><td style="white-space:normal;">'+escapeHTML(String(ct['Observa\u00e7\u00e3o']||''))+'</td><td style="white-space:normal;">'+escapeHTML(String(ct['Coment\u00e1rio']||''))+'</td></tr>'; }
+      html += '</tbody></table></div>'; }
+    // Parametros do Arrefecimento: OIL_APPEAR (peso), pH, Na, GL
+    html += '<h3 style="color:var(--teal); margin:14px 0 8px;">\uD83E\uDDCA Par\u00e2metros do Arrefecimento</h3>';
+    const labels = linhas.map(l=>{ const d=_dataLaudo(l); return d?formatarDataBR(d):''; });
+    const escalaOil = Object.keys(TEND_ORD_OIL).map(k => k + ' ' + TEND_ORD_OIL[k]).join(' \u00b7 ');
+    const fmtOil = v => { const n = Math.round(v); if(Math.abs(v-n) < 1e-9){ for(const k in TEND_ORD_OIL){ if(TEND_ORD_OIL[k]===n) return k + ' (' + n + ')'; } } return String(v); };
+    const cols = {}; const semCol = [];
+    let charts = '<div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:14px;">'; let algum = false;
+    for(const p of TEND_PARAMS_ARREF){
+      const col = _tendAcharCol(colunas, p.k); cols[p.k] = col;
+      if(!col){ semCol.push(p.k); continue; }
+      const pts = []; for(let i=0;i<linhas.length;i++){ const raw = linhas[i][col]; const y = p.ord ? _tendOrdVal(p, raw) : _numeroFlex(raw); pts.push({ x:labels[i], y:y }); }
+      if(!pts.some(q => q.y !== null)) continue;
+      algum = true;
+      const titulo = p.k + (p.ord ? ' (peso \u2014 maior pior)' : (p.dir===1 ? ' (maior pior)' : ' (menor pior)'));
+      charts += svgLineChart(titulo, pts, p.ord ? { min:0.5, max:5.5, ticks:[1,2,3,4,5], padL:88, padR:44, fmt:fmtOil } : {});
+    }
+    charts += '</div>';
+    if(!algum) charts = '<div style="color:var(--text-muted); font-size:13px;">Nenhuma coluna (OIL_APPEAR, pH, Na, GL) com valores v\u00e1lidos foi encontrada na Base Arrefecimento.</div>';
+    html += charts;
+    if(semCol.length) html += '<div style="font-size:11px; color:var(--text-muted); margin-top:6px;">Colunas n\u00e3o encontradas na Base Arrefecimento: '+escapeHTML(semCol.join(', '))+'</div>';
+    html += '<div style="font-size:11px; color:var(--text-muted); margin-top:6px;">OIL_APPEAR \u00e9 avaliado pelo peso da ordem ('+escapeHTML(escalaOil)+'); quanto maior o peso, pior. pH e Na: quanto maior pior. GL: quanto menor pior.</div>';
+    // Tabela de valores por coleta
+    const colsTab = TEND_PARAMS_ARREF.filter(p => cols[p.k]);
+    if(colsTab.length){
+      let tq = '<div style="overflow:auto; border:1px solid var(--border); border-radius:6px; margin-bottom:16px; margin-top:10px;"><table class="dados-table" style="min-width:100%;"><thead><tr><th style="width:150px;">Data</th><th style="width:180px;">Amostra</th>';
+      for(const p of colsTab){ tq += '<th>'+escapeHTML(p.k)+'</th>'; }
+      tq += '</tr></thead><tbody>';
+      for(const l of linhas){ const d=_dataLaudo(l); tq += '<tr><td>'+escapeHTML(d?formatarDataBR(d):'')+'</td><td>'+escapeHTML(String(l['TEXT_ID']||''))+'</td>';
+        for(const p of colsTab){ const v=l[cols[p.k]]; let txt = String(v==null?'':v).trim(); if(p.ord){ const w=_tendOrdVal(p, v); if(w!==null) txt = txt + ' (' + w + ')'; } tq += '<td title="'+escapeHTML(String(v==null?'':v))+'">'+escapeHTML(txt)+'</td>'; }
+        tq += '</tr>'; }
+      tq += '</tbody></table></div>';
+      html += tq;
+    }
+    if(opcoes && opcoes.incluirCMA){ html += secaoBacklogCMA(); }
+    return html;
+  }
+  function svgLineChart(titulo, pontos, opts){
+    opts = opts || {};
+    const W=560,H=240,padL=(opts.padL||52),padR=(opts.padR||16),padT=28,padB=64;
     const ys = pontos.map(p=>p.y).filter(v=>v!==null);
     const n = pontos.length;
     let min = Math.min.apply(null, ys), max = Math.max.apply(null, ys);
     if(!isFinite(min)||!isFinite(max)){ min=0; max=1; }
     if(min===max){ const d = (min===0)?1:Math.abs(min)*0.1; min-=d; max+=d; }
+    if(opts.min!==undefined) min=opts.min; if(opts.max!==undefined) max=opts.max;
     const plotW=W-padL-padR, plotH=H-padT-padB;
     const xFor = i => (n<=1)? (padL+plotW/2) : (padL + (i/(n-1))*plotW);
     const yFor = v => padT + plotH - ((v-min)/(max-min))*plotH;
-    const fmt = v => { const a=Math.abs(v); let s; if(a!==0 && (a<0.01 || a>=100000)) s=v.toPrecision(3); else s=(Math.round(v*100)/100).toLocaleString('pt-BR'); return s; };
+    const fmt = opts.fmt || (v => { const a=Math.abs(v); let s; if(a!==0 && (a<0.01 || a>=100000)) s=v.toPrecision(3); else s=(Math.round(v*100)/100).toLocaleString('pt-BR'); return s; });
     let segs=[]; let cur=[];
     for(let i=0;i<n;i++){ const v=pontos[i].y; if(v===null){ if(cur.length){segs.push(cur);cur=[];} continue; } cur.push([xFor(i), yFor(v)]); }
     if(cur.length) segs.push(cur);
@@ -3843,8 +4950,9 @@ for (const linha of d.linhas) {
     if(pts2.length>=2){ const m=pts2.length; let sx=0,sy=0,sxx=0,sxy=0; for(const p of pts2){ sx+=p[0]; sy+=p[1]; sxx+=p[0]*p[0]; sxy+=p[0]*p[1]; } const den=(m*sxx - sx*sx); if(den!==0){ const a=(m*sxy - sx*sy)/den; const b=(sy - a*sx)/m; const i1=pts2[0][0], i2=pts2[pts2.length-1][0]; const vx1=xFor(i1), vx2=xFor(i2); const vy1=yFor(a*i1+b), vy2=yFor(a*i2+b); trend = '<line x1="'+vx1.toFixed(1)+'" y1="'+vy1.toFixed(1)+'" x2="'+vx2.toFixed(1)+'" y2="'+vy2.toFixed(1)+'" stroke="#e53935" stroke-width="2" stroke-dasharray="5,3"/>'; } }
     const axis = '<line x1="'+padL+'" y1="'+padT+'" x2="'+padL+'" y2="'+(padT+plotH)+'" stroke="#ccc"/><line x1="'+padL+'" y1="'+(padT+plotH)+'" x2="'+(W-padR)+'" y2="'+(padT+plotH)+'" stroke="#ccc"/>';
     const yl = '<text x="'+(padL-6)+'" y="'+(padT+8)+'" font-size="9" text-anchor="end" fill="#666">'+fmt(max)+'</text><text x="'+(padL-6)+'" y="'+(padT+plotH)+'" font-size="9" text-anchor="end" fill="#666">'+fmt(min)+'</text>';
+    const ticksSvg = (opts.ticks||[]).map(function(t){ const yy=yFor(t); return '<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(W-padR)+'" y2="'+yy.toFixed(1)+'" stroke="#eee"/><text x="'+(padL-6)+'" y="'+(yy+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="#666">'+escapeHTML(fmt(t))+'</text>'; }).join('');
     const legenda = '<text x="'+(W-padR).toFixed(1)+'" y="14" font-size="9" text-anchor="end" fill="#e53935">-- tend\u00eancia</text>';
-    return '<div style="background:white; border:1px solid var(--border); border-radius:8px; padding:8px;"><div style="font-weight:600; color:var(--teal); font-size:13px; margin-bottom:4px; text-align:center;">'+escapeHTML(titulo)+'</div><svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">'+axis+yl+legenda+paths+dots+trend+valLabels+dateLabels+'</svg></div>';
+    return '<div style="background:white; border:1px solid var(--border); border-radius:8px; padding:8px;"><div style="font-weight:600; color:var(--teal); font-size:13px; margin-bottom:4px; text-align:center;">'+escapeHTML(titulo)+'</div><svg width="100%" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet">'+axis+(opts.ticks?ticksSvg:yl)+legenda+paths+dots+trend+valLabels+dateLabels+'</svg></div>';
   }
   function secaoBacklogCMA(){
     const KW = 'cma';

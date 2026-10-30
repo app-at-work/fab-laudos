@@ -432,6 +432,40 @@
   .tend-matriz { border-collapse:collapse; font-size:12px; }
   .tend-matriz th { background:var(--bg-panel); color:var(--text); padding:4px 10px; font-weight:700; border:1px solid var(--border); text-align:center; }
   .tend-matriz td { padding:5px 10px; border:1px solid var(--border); text-align:center; min-width:46px; font-variant-numeric:tabular-nums; }
+  /* ===== Modal de confirmacao moderno ===== */
+  .mc-backdrop { position:fixed; inset:0; background:rgba(15,23,42,0.55); backdrop-filter:blur(4px); z-index:10050; display:flex; align-items:center; justify-content:center; padding:16px; animation:mcFade .16s ease-out; }
+  .mc-box { background:#fff; width:440px; max-width:100%; max-height:92vh; overflow:auto; border-radius:16px; box-shadow:0 24px 70px rgba(0,0,0,0.35); animation:mcPop .22s cubic-bezier(.2,.9,.3,1.15); }
+  .mc-body { padding:28px 28px 4px; text-align:center; }
+  .mc-ico { width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; font-size:28px; background:#fdecea; box-shadow:0 0 0 8px #fef5f4; }
+  .mc-warn .mc-ico { background:#fff4e0; box-shadow:0 0 0 8px #fffaf0; }
+  .mc-titulo { font-size:18px; font-weight:700; color:#1f2933; margin:0 0 8px; }
+  .mc-msg { font-size:13.5px; color:var(--text-soft); line-height:1.55; }
+  .mc-msg b { color:#1f2933; }
+  .mc-detalhes { margin-top:16px; text-align:left; background:#f7f8fa; border:1px solid var(--border); border-radius:10px; padding:10px 14px; font-size:12.5px; }
+  .mc-detalhes > div { display:flex; gap:10px; padding:3px 0; }
+  .mc-detalhes b { min-width:118px; color:var(--text-soft); font-weight:600; flex-shrink:0; }
+  .mc-detalhes span { color:#1f2933; word-break:break-word; }
+  .mc-aviso { margin-top:12px; text-align:left; font-size:12px; color:#8a5300; background:#fff8e1; border:1px solid #ffe082; border-radius:8px; padding:8px 10px; }
+  .mc-confirma { margin-top:14px; text-align:left; font-size:12px; color:var(--text-soft); }
+  .mc-confirma input { width:100%; margin-top:6px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:14px; letter-spacing:1px; text-transform:uppercase; box-sizing:border-box; }
+  .mc-confirma input:focus { outline:none; border-color:var(--danger); box-shadow:0 0 0 3px rgba(198,40,40,0.15); }
+  .mc-erro { margin-top:12px; text-align:left; font-size:12px; color:#b71c1c; background:#fdecea; border:1px solid #f5c2c0; border-radius:8px; padding:8px 10px; }
+  .mc-footer { display:flex; gap:10px; padding:20px 28px 26px; }
+  .mc-footer button { flex:1; padding:11px 14px; border-radius:10px; font-weight:600; font-size:13.5px; cursor:pointer; border:1px solid transparent; transition:background .12s, box-shadow .12s, transform .05s; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+  .mc-footer button:active:not(:disabled) { transform:scale(.98); }
+  .mc-footer button:focus-visible { outline:none; box-shadow:0 0 0 3px rgba(0,126,122,0.35); }
+  .mc-btn-cancel { background:#fff; border-color:var(--border) !important; color:#374151; }
+  .mc-btn-cancel:hover:not(:disabled) { background:#f3f4f6; }
+  .mc-btn-ok { background:var(--danger); color:#fff; }
+  .mc-btn-ok:hover:not(:disabled) { background:#8b1414; }
+  .mc-warn .mc-btn-ok { background:#ef6c00; } .mc-warn .mc-btn-ok:hover:not(:disabled) { background:#c25700; }
+  .mc-footer button:disabled { opacity:.5; cursor:not-allowed; }
+  .mc-spin { width:14px; height:14px; border:2px solid rgba(255,255,255,0.45); border-top-color:#fff; border-radius:50%; animation:mcSpin .7s linear infinite; }
+  @keyframes mcFade { from { opacity:0; } to { opacity:1; } }
+  @keyframes mcPop { from { opacity:0; transform:translateY(10px) scale(.96); } to { opacity:1; transform:none; } }
+  @keyframes mcSpin { to { transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .mc-backdrop, .mc-box, .mc-spin { animation:none; } }
+  @media (max-width:480px) { .mc-footer { flex-direction:column-reverse; } }
 </style>
 </head>
 <body>
@@ -652,7 +686,12 @@
       <div class="mon-toggle" id="monToggleControle" style="display:inline-flex; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
         <button type="button" data-val="TODOS" class="active" onclick="setMonControle('TODOS')">Todos</button>
         <button type="button" data-val="COM" onclick="setMonControle('COM')">✅ Com controle</button>
-        <button type="button" data-val="SEM" title="Laudos Normal n\u00e3o exigem a\u00e7\u00e3o e n\u00e3o entram aqui" onclick="setMonControle('SEM')">⚠️ Sem controle</button>
+        <button type="button" data-val="SEM" title="Laudos Normal não exigem ação e não entram aqui" onclick="setMonControle('SEM')">⚠️ Sem controle</button>
+      </div>
+      <div class="mon-toggle" id="monToggleTipo" style="display:none; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
+        <button type="button" data-val="TODOS" class="active" onclick="setMonTipo('TODOS')">Todos os laudos</button>
+        <button type="button" data-val="OLEO" onclick="setMonTipo('OLEO')">🛢️ Óleo</button>
+        <button type="button" data-val="ARREF" onclick="setMonTipo('ARREF')">🧊 Arrefecimento</button>
       </div>
       <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-soft); white-space:nowrap;">
         De <input type="date" id="monDe" onchange="renderizarMonitoramento()" style="padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px;">
@@ -2340,8 +2379,8 @@ for (const linha of d.linhas) {
   function _monZeraCats(){ const o={}; for(const c of MON_CATS) o[c.key]=0; return o; }
 
   // Coluna de origem do arquivo dentro de DADOS.BASE (robusto contra variacao de emoji)
-  function _monColOrigem(){
-    const cols = (DADOS.BASE && DADOS.BASE.colunas) ? DADOS.BASE.colunas : [];
+  function _monColOrigem(colunas){
+    const cols = colunas || ((DADOS.BASE && DADOS.BASE.colunas) ? DADOS.BASE.colunas : []);
     return cols.find(c => String(c).includes('Arquivo Origem')) || '📎 Arquivo Origem';
   }
   // Mapa: nome do arquivo -> data de CRIACAO do arquivo (fallback: lastModified) da pasta Base Laudos
@@ -2354,56 +2393,66 @@ for (const linha of d.linhas) {
   // Formatos aceitos: { "arquivo.txt":"2026-07-31T07:42:00", ... }  |  [{nome, criado}]  |  {registros:[{nome, criado}]}
   async function _monCarregarDatasCriacao(){
     MON_DATAS_CRIACAO = new Map();
-    MON_SIDECAR_INFO = { encontrado:false, qtd:0, arquivo:'datas_criacao.json' };
-    try {
-      const dir = ESTRUTURA.BASE && ESTRUTURA.BASE.handle;
-      if (!dir) return;
-      let fh = null;
-      for (const nome of ['datas_criacao.json','datas_criacao.JSON','datas_criacao.csv']){
-        try { fh = await dir.getFileHandle(nome); if (fh){ MON_SIDECAR_INFO.arquivo = nome; break; } } catch(e) {}
-      }
-      if (!fh) return;
-      const file = await fh.getFile();
-      const txt = await file.text();
-      const add = (nome, val) => {
-        if (!nome) return;
-        let d = parseDataFlex(val);
-        if (!d && val){ const dd = new Date(val); if (!isNaN(dd)) d = dd; }
-        if (d && !isNaN(d)) MON_DATAS_CRIACAO.set(String(nome).trim(), d);
-      };
-      if (/\.csv$/i.test(MON_SIDECAR_INFO.arquivo)){
-        // CSV: cabecalho com Nome/Name e Criacao/CreationTime (separador ; ou ,)
-        const linhas = txt.split(/\r?\n/).filter(l=>l.trim()!=='');
-        if (linhas.length){
-          const sep = (linhas[0].split(';').length >= linhas[0].split(',').length) ? ';' : ',';
-          const head = linhas[0].split(sep).map(h=>h.trim().toLowerCase());
-          const iNome = head.findIndex(h=>h.includes('nome')||h.includes('name'));
-          const iData = head.findIndex(h=>h.includes('cria')||h.includes('creation'));
-          for (let i=1;i<linhas.length;i++){ const c = linhas[i].split(sep); if (iNome>-1&&iData>-1) add((c[iNome]||'').replace(/^"|"$/g,''), (c[iData]||'').replace(/^"|"$/g,'')); }
+    MON_SIDECAR_INFO = { encontrado:false, qtd:0, arquivo:'datas_criacao.json', porTipo:{ OLEO:0, ARREF:0 } };
+    const pastas = [ ['OLEO', ESTRUTURA.BASE && ESTRUTURA.BASE.handle], ['ARREF', ESTRUTURA.ARREF && ESTRUTURA.ARREF.handle] ];
+    for (const par of pastas){
+      const tipo = par[0], dir = par[1];
+      if (!dir) continue;
+      try {
+        let fh = null; let nomeSidecar = 'datas_criacao.json';
+        for (const nome of ['datas_criacao.json','datas_criacao.JSON','datas_criacao.csv']){
+          try { fh = await dir.getFileHandle(nome); if (fh){ nomeSidecar = nome; break; } } catch(e) {}
         }
-      } else {
-        const data = JSON.parse(txt);
-        const pick = r => r ? (r.criado ?? r.criacao ?? r.CreationTime ?? r.createdDateTime ?? r.data ?? r.Data) : null;
-        const nome = r => r ? (r.nome ?? r.arquivo ?? r.Name ?? r.name) : null;
-        if (Array.isArray(data)) { for (const r of data) add(nome(r), pick(r)); }
-        else if (data && Array.isArray(data.registros)) { for (const r of data.registros) add(nome(r), pick(r)); }
-        else if (data && typeof data === 'object') { for (const k of Object.keys(data)) add(k, data[k]); }
-      }
-      MON_SIDECAR_INFO.encontrado = true;
-      MON_SIDECAR_INFO.qtd = MON_DATAS_CRIACAO.size;
-    } catch(e) { console.warn('Sidecar datas_criacao:', e && e.message); }
+        if (!fh) continue;
+        const file = await fh.getFile();
+        const txt = await file.text();
+        let qtd = 0;
+        const add = (nome, val) => {
+          if (!nome) return;
+          let d = parseDataFlex(val);
+          if (!d && val){ const dd = new Date(val); if (!isNaN(dd)) d = dd; }
+          if (d && !isNaN(d)) { MON_DATAS_CRIACAO.set(tipo + '|' + String(nome).trim(), d); qtd++; }
+        };
+        if (/\.csv$/i.test(nomeSidecar)){
+          // CSV: cabecalho com Nome/Name e Criacao/CreationTime (separador ; ou ,)
+          const linhas = txt.split(/\r?\n/).filter(l=>l.trim()!=='');
+          if (linhas.length){
+            const sep = (linhas[0].split(';').length >= linhas[0].split(',').length) ? ';' : ',';
+            const head = linhas[0].split(sep).map(h=>h.trim().toLowerCase());
+            const iNome = head.findIndex(h=>h.includes('nome')||h.includes('name'));
+            const iData = head.findIndex(h=>h.includes('cria')||h.includes('creation'));
+            for (let k=1;k<linhas.length;k++){ const c = linhas[k].split(sep); if (iNome>-1&&iData>-1) add((c[iNome]||'').replace(/^"|"$/g,''), (c[iData]||'').replace(/^"|"$/g,'')); }
+          }
+        } else {
+          const data = JSON.parse(txt);
+          const pick = r => r ? (r.criado ?? r.criacao ?? r.CreationTime ?? r.createdDateTime ?? r.data ?? r.Data) : null;
+          const nome = r => r ? (r.nome ?? r.arquivo ?? r.Name ?? r.name) : null;
+          if (Array.isArray(data)) { for (const r of data) add(nome(r), pick(r)); }
+          else if (data && Array.isArray(data.registros)) { for (const r of data.registros) add(nome(r), pick(r)); }
+          else if (data && typeof data === 'object') { for (const k of Object.keys(data)) add(k, data[k]); }
+        }
+        MON_SIDECAR_INFO.encontrado = true;
+        MON_SIDECAR_INFO.arquivo = nomeSidecar;
+        MON_SIDECAR_INFO.porTipo[tipo] = qtd;
+        MON_SIDECAR_INFO.qtd += qtd;
+      } catch(e) { console.warn('Sidecar datas_criacao (' + tipo + '):', e && e.message); }
+    }
   }
 
   function _monMapaDataArquivo(){
     const mapa = new Map();
-    const arqs = (ESTRUTURA.BASE && ESTRUTURA.BASE.arquivos) ? ESTRUTURA.BASE.arquivos : [];
     let usouCriacao = 0;
-    for (const a of arqs){
-      let dc;
-      if (MON_DATAS_CRIACAO.has(a.nome)) { dc = MON_DATAS_CRIACAO.get(a.nome).getTime(); usouCriacao++; }
-      else if (a.criado != null) { dc = a.criado; }
-      else { dc = a.modificado; }
-      mapa.set(a.nome, dc);
+    const fontes = [ ['OLEO', ESTRUTURA.BASE], ['ARREF', ESTRUTURA.ARREF] ];
+    for (const f of fontes){
+      const arqs = (f[1] && f[1].arquivos) ? f[1].arquivos : [];
+      for (const a of arqs){
+        const k = f[0] + '|' + a.nome;
+        let dc;
+        if (MON_DATAS_CRIACAO.has(k)) { dc = MON_DATAS_CRIACAO.get(k).getTime(); usouCriacao++; }
+        else if (a.criado != null) { dc = a.criado; }
+        else { dc = a.modificado; }
+        mapa.set(k, dc);
+      }
     }
     MON_FONTE_DATA = (usouCriacao > 0) ? 'criacao' : 'modificacao';
     return mapa;
@@ -2465,6 +2514,7 @@ for (const linha of d.linhas) {
       body.innerHTML = '<div class="dados-placeholder"><div class="big">⏳</div><h3>Carregando Base Laudos...</h3><p>Consolidando os registros do menu Dados.</p></div>';
       try { await carregarDados('BASE'); } catch(e) {}
     }
+    if (!DADOS.ARREF.carregado){ try { await carregarDados('ARREF'); } catch(e) {} }
     // Indice de Controle necessario para o toggle Com/Sem controle
     if (CONTROLE_INDEX.size === 0){
       try { await carregarControleAnalise(); } catch(e) {}
@@ -2474,6 +2524,35 @@ for (const linha of d.linhas) {
     renderizarMonitoramento();
   }
 
+  // ===== Monitoramento Laudos: Oleo (Laudos Oleo SOS) + Arrefecimento (Laudos Arrefecimento SOS) =====
+  let MON_FILTRO_TIPO = 'TODOS';   // 'TODOS' | 'OLEO' | 'ARREF'
+  function _monFontes(){
+    const f = [];
+    if (DADOS.BASE && DADOS.BASE.carregado && DADOS.BASE.linhas.length) f.push({ tipo:'OLEO', linhas:DADOS.BASE.linhas, colunas:DADOS.BASE.colunas || [] });
+    if (DADOS.ARREF && DADOS.ARREF.carregado && DADOS.ARREF.linhas.length) f.push({ tipo:'ARREF', linhas:DADOS.ARREF.linhas, colunas:DADOS.ARREF.colunas || [] });
+    return f;
+  }
+  function _monAtualizarToggleTipo(){
+    const box = document.getElementById('monToggleTipo'); if (!box) return;
+    const temArref = !!(DADOS.ARREF && DADOS.ARREF.carregado && DADOS.ARREF.linhas.length);
+    const temOleo = !!(DADOS.BASE && DADOS.BASE.carregado && DADOS.BASE.linhas.length);
+    box.style.display = (temArref && temOleo) ? 'inline-flex' : 'none';
+    if (!(temArref && temOleo)) MON_FILTRO_TIPO = 'TODOS';
+    box.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.getAttribute('data-val') === MON_FILTRO_TIPO));
+  }
+  function setMonTipo(val){
+    MON_FILTRO_TIPO = (val === 'OLEO' || val === 'ARREF') ? val : 'TODOS';
+    renderizarMonitoramento();
+  }
+  function _monNotaSidecarArref(){
+    const pt = MON_SIDECAR_INFO.porTipo || {};
+    const temArref = !!(DADOS.ARREF && DADOS.ARREF.linhas && DADOS.ARREF.linhas.length);
+    const temOleo = !!(DADOS.BASE && DADOS.BASE.linhas && DADOS.BASE.linhas.length);
+    const falta = [];
+    if (temOleo && !pt.OLEO) falta.push('\u00d3leo');
+    if (temArref && !pt.ARREF) falta.push('Arrefecimento');
+    return falta.length ? (' \u00b7 <b>' + falta.join(' e ') + '</b> sem datas_criacao.json: usando a data de modifica\u00e7\u00e3o') : '';
+  }
   // Estado do toggle Com/Sem controle: 'TODOS' | 'COM' | 'SEM'
   let MON_FILTRO_CONTROLE = 'TODOS';
   function setMonControle(val){
@@ -2555,16 +2634,19 @@ for (const linha of d.linhas) {
   function atualizarBadgeMonitoramento(){
     const b = document.getElementById('cbadge-MONITORAMENTO');
     if (!b) return;
-    if (!DADOS.BASE || !DADOS.BASE.carregado){ b.textContent = '—'; return; }
-    b.textContent = String(DADOS.BASE.linhas.length);
+    const nB = (DADOS.BASE && DADOS.BASE.carregado) ? DADOS.BASE.linhas.length : null;
+    const nA = (DADOS.ARREF && DADOS.ARREF.carregado) ? DADOS.ARREF.linhas.length : null;
+    if (nB === null && nA === null){ b.textContent = '—'; return; }
+    b.textContent = String((nB || 0) + (nA || 0));
   }
 
   function renderizarMonitoramento(){
     const body = document.getElementById('monBody');
-    if (!DADOS.BASE || !DADOS.BASE.carregado || !DADOS.BASE.linhas.length){
+    _monAtualizarToggleTipo();
+    if (!_monFontes().length){
       document.getElementById('monStats').innerHTML = '';
       MON_DADOS = { mes:[], semana:[], dia:[], cats:_monZeraCats(), total:0, semData:0 };
-      body.innerHTML = '<div class="dados-placeholder"><div class="big">📊</div><h3>Base Laudos não carregada</h3><p>Abra o menu <b>Dados → Base Laudos</b> para consolidar os registros (após a primeira tratativa) e volte aqui.</p></div>';
+      body.innerHTML = '<div class="dados-placeholder"><div class="big">📊</div><h3>Laudos não carregados</h3><p>Abra o menu <b>Dados → Base Laudos / Base Arrefecimento</b> para consolidar os registros (após a primeira tratativa) e volte aqui.</p></div>';
       return;
     }
 
@@ -2574,30 +2656,34 @@ for (const linha of d.linhas) {
     const deTs = deVal ? new Date(deVal + 'T00:00:00').getTime() : null;
     const ateTs = ateVal ? new Date(ateVal + 'T23:59:59.999').getTime() : null;
 
-    const colOrigem = _monColOrigem();
     const mapaData = _monMapaDataArquivo();
 
     const catsTot = _monZeraCats();
     let total = 0, semData = 0;
+    const totTipo = { OLEO:0, ARREF:0 };
     const comData = [];
-    const todosComData = []; // TODOS os registros com data (ignora toggle/periodo) — p/ referência fixa dos cards
-    for (const l of DADOS.BASE.linhas){
-      const cat = _monCatOverall(l['OVERALL_INTERP']);
-      const nomeArq = l[colOrigem];
-      const ts = mapaData.has(nomeArq) ? mapaData.get(nomeArq) : null;
-      // Guarda a data máxima global (sem qualquer filtro)
-      if (ts != null) todosComData.push({ data:new Date(ts), cat });
-      // Toggle Com/Sem controle
-      if (MON_FILTRO_CONTROLE !== 'TODOS'){
-        const temCtrl = _monTemControle(l['TEXT_ID']);
-        if (MON_FILTRO_CONTROLE === 'COM' && !temCtrl) continue;
-        if (MON_FILTRO_CONTROLE === 'SEM' && (temCtrl || cat === 'NORMAL')) continue;   // Normal nao exige acao
+    const todosComData = []; // registros com data (ignora toggle de controle/periodo; respeita o tipo de laudo) — p/ referência fixa dos cards
+    for (const f of _monFontes()){
+      if (MON_FILTRO_TIPO !== 'TODOS' && f.tipo !== MON_FILTRO_TIPO) continue;
+      const colOrigem = _monColOrigem(f.colunas);
+      for (const l of f.linhas){
+        const cat = _monCatOverall(l['OVERALL_INTERP']);
+        const kArq = f.tipo + '|' + l[colOrigem];
+        const ts = mapaData.has(kArq) ? mapaData.get(kArq) : null;
+        // Guarda a data máxima global (sem filtro de controle/período)
+        if (ts != null) todosComData.push({ data:new Date(ts), cat });
+        // Toggle Com/Sem controle (laudo Normal nao exige acao: nunca entra em "Sem controle")
+        if (MON_FILTRO_CONTROLE !== 'TODOS'){
+          const temCtrl = _monTemControle(l['TEXT_ID']);
+          if (MON_FILTRO_CONTROLE === 'COM' && !temCtrl) continue;
+          if (MON_FILTRO_CONTROLE === 'SEM' && (temCtrl || cat === 'NORMAL')) continue;
+        }
+        if (ts == null){ semData++; catsTot[cat]++; total++; totTipo[f.tipo]++; continue; }
+        if (deTs !== null && ts < deTs) continue;
+        if (ateTs !== null && ts > ateTs) continue;
+        catsTot[cat]++; total++; totTipo[f.tipo]++;
+        comData.push({ data:new Date(ts), cat });
       }
-      if (ts == null){ semData++; catsTot[cat]++; total++; continue; }
-      if (deTs !== null && ts < deTs) continue;
-      if (ateTs !== null && ts > ateTs) continue;
-      catsTot[cat]++; total++;
-      comData.push({ data:new Date(ts), cat });
     }
     // Data de referência FIXA (máxima) — independente do toggle e do período
     const refDiaGlobal = _monRefGlobalDia(todosComData);
@@ -2615,9 +2701,12 @@ for (const linha of d.linhas) {
       if (c.key === 'OUTROS' && catsTot[c.key] === 0) continue;
       statsHtml += `<span style="color:${c.cor}"><b style="color:${c.cor}">${catsTot[c.key]}</b> ${escapeHTML(c.label)}</span>`;
     }
+    if (_monFontes().length > 1 && MON_FILTRO_TIPO === 'TODOS') statsHtml += '<span style="color:#1565c0" title="Laudos de \u00d3leo">\uD83D\uDEE2\uFE0F \u00d3leo: <b>' + totTipo.OLEO + '</b></span><span style="color:#00838f" title="Laudos de Arrefecimento">\uD83E\uDDCA Arrefecimento: <b>' + totTipo.ARREF + '</b></span>';
     document.getElementById('monStats').innerHTML = statsHtml;
 
     const filtroTxt = [];
+    if (MON_FILTRO_TIPO === 'OLEO') filtroTxt.push('\uD83D\uDEE2\uFE0F apenas \u00d3leo');
+    else if (MON_FILTRO_TIPO === 'ARREF') filtroTxt.push('\uD83E\uDDCA apenas Arrefecimento');
     if (MON_FILTRO_CONTROLE === 'COM') filtroTxt.push('✅ apenas com controle');
     else if (MON_FILTRO_CONTROLE === 'SEM') filtroTxt.push('⚠️ apenas sem controle (exceto Normal)');
     if (deVal) filtroTxt.push('📅 de ' + deVal.split('-').reverse().join('/'));
@@ -2626,7 +2715,7 @@ for (const linha of d.linhas) {
 
     // ===== Cards (um por categoria) — com "última data" =====
     let html = '<div class="summary" style="display:flex;">' +
-      `<div class="card"><div class="titulo">📄 Total de Registros</div><div class="valor">${total}</div><div class="sub">laudos na Base Laudos</div>${_monCardUltima(refDiaGlobal, _monQtdNoDia(todosComData, 'ALL', refDiaGlobal), 'var(--teal)')}</div>`;
+      `<div class="card"><div class="titulo">📄 Total de Registros</div><div class="valor">${total}</div><div class="sub">${MON_FILTRO_TIPO === 'OLEO' ? 'laudos de Óleo' : (MON_FILTRO_TIPO === 'ARREF' ? 'laudos de Arrefecimento' : (_monFontes().length > 1 ? 'laudos (Óleo + Arrefecimento)' : 'laudos na Base Laudos'))}</div>${_monCardUltima(refDiaGlobal, _monQtdNoDia(todosComData, 'ALL', refDiaGlobal), 'var(--teal)')}</div>`;
     for (const c of MON_CATS){
       if (c.key === 'OUTROS' && catsTot[c.key] === 0) continue;
       html += `<div class="card" style="border-left-color:${c.cor};"><div class="titulo" style="color:${c.cor};">● ${escapeHTML(c.label)}</div><div class="valor">${catsTot[c.key]}</div><div class="sub">${pct(catsTot[c.key]).toFixed(1)}% do total</div>${_monCardUltima(refDiaGlobal, _monQtdNoDia(todosComData, c.key, refDiaGlobal), c.cor)}</div>`;
@@ -2675,9 +2764,9 @@ for (const linha of d.linhas) {
   // Banner indicando a FONTE da data usada (criação via sidecar x modificação)
   function montarBannerFonteData(){
     if (MON_FONTE_DATA === 'criacao'){
-      return `<div style="margin-top:10px; padding:8px 12px; background:#e8f5e9; border:1px solid #a5d6a7; border-radius:8px; font-size:12px; color:#2e7d32;">✅ Usando <b>Data de criação</b> real dos arquivos (via <b>${escapeHTML(MON_SIDECAR_INFO.arquivo)}</b> — ${MON_SIDECAR_INFO.qtd} arquivo(s)).</div>`;
+      return `<div style="margin-top:10px; padding:8px 12px; background:#e8f5e9; border:1px solid #a5d6a7; border-radius:8px; font-size:12px; color:#2e7d32;">✅ Usando <b>Data de criação</b> real dos arquivos (via <b>${escapeHTML(MON_SIDECAR_INFO.arquivo)}</b> — ${MON_SIDECAR_INFO.qtd} arquivo(s))${_monNotaSidecarArref()}.</div>`;
     }
-    return `<div style="margin-top:10px; padding:8px 12px; background:#fff8e1; border:1px solid #ffe082; border-radius:8px; font-size:12px; color:#8a6d00;">⚠️ Usando <b>Data de modificação</b> (o navegador não expõe a data de criação). Gere o arquivo <b>datas_criacao.json</b> na pasta <i>Base Laudos</i> com o script fornecido para usar a <b>Data de criação</b> real.</div>`;
+    return `<div style="margin-top:10px; padding:8px 12px; background:#fff8e1; border:1px solid #ffe082; border-radius:8px; font-size:12px; color:#8a6d00;">⚠️ Usando <b>Data de modificação</b> (o navegador não expõe a data de criação). Gere o arquivo <b>datas_criacao.json</b> nas pastas <i>Laudos Óleo SOS</i> e <i>Laudos Arrefecimento SOS</i> com o script fornecido para usar a <b>Data de criação</b> real.</div>`;
   }
 
   // Grafico de colunas EMPILHADAS por categoria (Normal, Monitorar, Crítico, Outros)
@@ -2781,6 +2870,7 @@ for (const linha of d.linhas) {
       return s + '\n';
     };
     let csv = '\uFEFF';
+    csv += `Tipo de laudo;${MON_FILTRO_TIPO === 'OLEO' ? 'Oleo' : (MON_FILTRO_TIPO === 'ARREF' ? 'Arrefecimento' : 'Oleo + Arrefecimento')}\n`;
     csv += `Resumo;${cols};Sem data;Total\n`;
     csv += `Geral;` + MON_CATS.map(c=>MON_DADOS.cats[c.key]||0).join(';') + `;${MON_DADOS.semData};${MON_DADOS.total}\n\n`;
     csv += bloco('Mes', MON_DADOS.mes);
@@ -3148,26 +3238,118 @@ for (const linha of d.linhas) {
     } catch (err) { mostrarErroRegistro('Erro ao salvar: ' + err.message); }
   }
 
+  // ===== Modal de confirmacao moderno (substitui o confirm() nativo) =====
+  // opts: { tipo:'danger'|'warn', icone, titulo, mensagem (HTML - escape os dados dinamicos), detalhes:[{rotulo,valor}], aviso,
+  //         exigirTexto:'LIMPAR' (usuario precisa digitar), confirmarTexto, cancelarTexto, ocupadoTexto, acao: async () => {} }
+  // Retorna Promise<boolean>: true = confirmou (e a acao, se houver, terminou sem erro) | false = cancelou.
+  // Se a acao lancar erro, ele aparece dentro do modal e o usuario pode tentar de novo ou cancelar.
+  let _mcAtivo = null;
+  function modalConfirmar(opts){
+    opts = opts || {};
+    if (_mcAtivo) { try { _mcAtivo.fechar(false); } catch (e) {} }
+    return new Promise(function(resolve){
+      const tipo = opts.tipo === 'warn' ? 'warn' : 'danger';
+      const uid = 'mc' + Date.now();
+      const exigir = opts.exigirTexto ? String(opts.exigirTexto).toUpperCase() : '';
+      const focoAnterior = document.activeElement;
+      const detItens = (opts.detalhes || []).filter(d => d && d.valor !== undefined && d.valor !== null && String(d.valor).trim() !== '');
+      const el = document.createElement('div');
+      el.className = 'mc-backdrop';
+      el.innerHTML =
+        '<div class="mc-box mc-' + tipo + '" role="alertdialog" aria-modal="true" aria-labelledby="' + uid + 't" aria-describedby="' + uid + 'm">' +
+          '<div class="mc-body">' +
+            '<div class="mc-ico" aria-hidden="true">' + (opts.icone || '\uD83D\uDDD1\uFE0F') + '</div>' +
+            '<h3 class="mc-titulo" id="' + uid + 't">' + escapeHTML(opts.titulo || 'Confirmar') + '</h3>' +
+            '<div class="mc-msg" id="' + uid + 'm">' + (opts.mensagem || '') + '</div>' +
+            (detItens.length ? '<div class="mc-detalhes">' + detItens.map(d => '<div><b>' + escapeHTML(d.rotulo) + '</b><span>' + escapeHTML(String(d.valor)) + '</span></div>').join('') + '</div>' : '') +
+            (opts.aviso ? '<div class="mc-aviso">\u26A0\uFE0F ' + escapeHTML(opts.aviso) + '</div>' : '') +
+            (exigir ? '<div class="mc-confirma"><label>Para confirmar, digite <b>' + escapeHTML(exigir) + '</b>:<input type="text" autocomplete="off" spellcheck="false" aria-label="Digite ' + escapeHTML(exigir) + ' para confirmar"></label></div>' : '') +
+            '<div class="mc-erro" role="alert" style="display:none;"></div>' +
+          '</div>' +
+          '<div class="mc-footer">' +
+            '<button type="button" class="mc-btn-cancel">' + escapeHTML(opts.cancelarTexto || 'Cancelar') + '</button>' +
+            '<button type="button" class="mc-btn-ok">' + escapeHTML(opts.confirmarTexto || 'Excluir') + '</button>' +
+          '</div>' +
+        '</div>';
+      document.body.appendChild(el);
+      const btnCancel = el.querySelector('.mc-btn-cancel');
+      const btnOk = el.querySelector('.mc-btn-ok');
+      const inp = el.querySelector('.mc-confirma input');
+      const erroEl = el.querySelector('.mc-erro');
+      let ocupado = false;
+      const liberado = () => !exigir || (inp && inp.value.trim().toUpperCase() === exigir);
+      const atualizarOk = () => { btnOk.disabled = ocupado || !liberado(); };
+      function setOcupado(v){
+        ocupado = v; atualizarOk(); btnCancel.disabled = v;
+        btnOk.innerHTML = v ? '<span class="mc-spin"></span>' + escapeHTML(opts.ocupadoTexto || 'Processando...') : escapeHTML(opts.confirmarTexto || 'Excluir');
+      }
+      function fechar(res){
+        document.removeEventListener('keydown', onKey, true);
+        if (el.parentNode) el.parentNode.removeChild(el);
+        if (_mcAtivo && _mcAtivo.el === el) _mcAtivo = null;
+        try { if (focoAnterior && focoAnterior.focus) focoAnterior.focus(); } catch (e) {}
+        resolve(res);
+      }
+      async function confirmar(){
+        if (ocupado || !liberado()) return;
+        erroEl.style.display = 'none';
+        if (typeof opts.acao === 'function'){
+          setOcupado(true);
+          try { await opts.acao(); }
+          catch (err) { setOcupado(false); erroEl.textContent = (err && err.message) ? err.message : String(err); erroEl.style.display = 'block'; return; }
+        }
+        fechar(true);
+      }
+      function onKey(e){
+        if (e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); if (!ocupado) fechar(false); return; }
+        if (e.key === 'Enter' && e.target === inp){ e.preventDefault(); confirmar(); return; }
+        if (e.key === 'Tab'){
+          const foc = Array.from(el.querySelectorAll('input, button')).filter(x => !x.disabled);
+          if (!foc.length) return;
+          const i = foc.indexOf(document.activeElement);
+          if (e.shiftKey && i <= 0){ e.preventDefault(); foc[foc.length - 1].focus(); }
+          else if (!e.shiftKey && (i === foc.length - 1 || i === -1)){ e.preventDefault(); foc[0].focus(); }
+        }
+      }
+      document.addEventListener('keydown', onKey, true);
+      el.addEventListener('mousedown', function(e){ if (e.target === el && !ocupado) fechar(false); });
+      btnCancel.addEventListener('click', function(){ if (!ocupado) fechar(false); });
+      btnOk.addEventListener('click', confirmar);
+      if (inp) inp.addEventListener('input', atualizarOk);
+      atualizarOk();
+      _mcAtivo = { el: el, fechar: fechar };
+      setTimeout(function(){ try { (inp || btnCancel).focus(); } catch (e) {} }, 30);   // foco inicial no lado seguro (Cancelar)
+    });
+  }
+
   async function excluirRegistro() {
     if (!EDITANDO_UID) { alert('Selecione um registro existente para excluir.'); return; }
-    if (!confirm('Excluir este registro da amostra ' + EDITANDO_AMOSTRA + '?')) return;
-    try {
-      if (!(await garantirPermissaoEscrita(CONTROLE_JSON_FILE_HANDLE))) { throw new Error('Permiss\u00e3o de escrita negada. Clique novamente e permita o acesso \u00e0 pasta.'); }
-      // Read-modify-write: remove apenas o registro pelo _id na versao atual do disco
-      const file = await CONTROLE_JSON_FILE_HANDLE.getFile();
-      const dadosDisco = JSON.parse(await file.text());
-      if (!Array.isArray(dadosDisco.registros)) dadosDisco.registros = [];
-      const pos = dadosDisco.registros.findIndex(r => r && String(r._id) === String(EDITANDO_UID));
-      if (pos >= 0) { dadosDisco.registros.splice(pos, 1); }
-      else { throw new Error('Registro nao encontrado no arquivo atual (pode ter sido removido por outro usuario).'); }
-      const writable = await CONTROLE_JSON_FILE_HANDLE.createWritable();
-      await writable.write(JSON.stringify(dadosDisco, null, 2));
-      await writable.close();
-      CONTROLE_JSON_DATA = dadosDisco;
-      fecharModalRegistro();
-      await carregarControleAnalise();
-      setStatus('🗑\ufe0f Registro exclu\u00eddo.');
-    } catch (err) { mostrarErroRegistro('Erro ao excluir: ' + err.message); }
+    const uid = EDITANDO_UID; const amostra = EDITANDO_AMOSTRA;
+    const val = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    await modalConfirmar({
+      tipo: 'danger', icone: '\uD83D\uDDD1\uFE0F', titulo: 'Excluir controle?',
+      mensagem: 'O registro de controle da amostra <b>' + escapeHTML(String(amostra || '')) + '</b> ser\u00e1 removido do <b>controle_laudos.json</b>.',
+      detalhes: [ { rotulo:'Amostra', valor:amostra }, { rotulo:'A\u00e7\u00e3o', valor:val('fldAcao') }, { rotulo:'Nota/Ordem', valor:val('fldNota') }, { rotulo:'Avalia\u00e7\u00e3o Analista', valor:val('fldAvaliacaoAnalista') } ],
+      aviso: 'Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.',
+      confirmarTexto: 'Excluir', ocupadoTexto: 'Excluindo...',
+      acao: async function(){
+        if (!(await garantirPermissaoEscrita(CONTROLE_JSON_FILE_HANDLE))) { throw new Error('Permiss\u00e3o de escrita negada. Clique novamente e permita o acesso \u00e0 pasta.'); }
+        // Read-modify-write: remove apenas o registro pelo _id na versao atual do disco
+        const file = await CONTROLE_JSON_FILE_HANDLE.getFile();
+        const dadosDisco = JSON.parse(await file.text());
+        if (!Array.isArray(dadosDisco.registros)) dadosDisco.registros = [];
+        const pos = dadosDisco.registros.findIndex(r => r && String(r._id) === String(uid));
+        if (pos >= 0) { dadosDisco.registros.splice(pos, 1); }
+        else { throw new Error('Registro n\u00e3o encontrado no arquivo atual (pode ter sido removido por outro usu\u00e1rio).'); }
+        const writable = await CONTROLE_JSON_FILE_HANDLE.createWritable();
+        await writable.write(JSON.stringify(dadosDisco, null, 2));
+        await writable.close();
+        CONTROLE_JSON_DATA = dadosDisco;
+        fecharModalRegistro();
+        await carregarControleAnalise();
+        setStatus('\uD83D\uDDD1\uFE0F Registro exclu\u00eddo.');
+      }
+    });
   }
 
   function valoresDistintos(campo) {
@@ -3341,20 +3523,26 @@ for (const linha of d.linhas) {
 
   async function limparControle() {
     if (!CONTROLE_JSON_FILE_HANDLE) { alert('Nenhum arquivo controle_laudos.json carregado. Selecione a pasta raiz primeiro.'); return; }
-    if (!confirm('\u26A0\ufe0f ATEN\u00c7\u00c3O: isto vai APAGAR TODOS os registros do controle. Deseja continuar?')) return;
-    if (!confirm('Confirma\u00e7\u00e3o final: esta a\u00e7\u00e3o N\u00c3O pode ser desfeita. Limpar todo o controle mesmo?')) return;
-    try {
-      if (!(await garantirPermissaoEscrita(CONTROLE_JSON_FILE_HANDLE))) { throw new Error('Permiss\u00e3o de escrita negada.'); }
-      const file = await CONTROLE_JSON_FILE_HANDLE.getFile();
-      const dadosDisco = JSON.parse(await file.text());
-      dadosDisco.registros = [];
-      const writable = await CONTROLE_JSON_FILE_HANDLE.createWritable();
-      await writable.write(JSON.stringify(dadosDisco, null, 2));
-      await writable.close();
-      CONTROLE_JSON_DATA = dadosDisco;
-      await carregarControleAnalise();
-      setStatus('🧹 Controle limpo: todos os registros foram removidos.');
-    } catch (err) { alert('Erro ao limpar o controle: ' + err.message); }
+    const d = CONTROLE_JSON_DATA;
+    const n = Array.isArray(d) ? d.length : ((d && Array.isArray(d.registros)) ? d.registros.length : CONTROLE_FLAT.length);
+    await modalConfirmar({
+      tipo: 'danger', icone: '\u26A0\uFE0F', titulo: 'Limpar todo o controle?',
+      mensagem: 'Todos os <b>' + n.toLocaleString('pt-BR') + ' registro(s)</b> do <b>controle_laudos.json</b> ser\u00e3o apagados.',
+      aviso: 'Esta a\u00e7\u00e3o N\u00c3O pode ser desfeita. Se precisar, fa\u00e7a uma c\u00f3pia do arquivo antes.',
+      exigirTexto: 'LIMPAR', confirmarTexto: 'Limpar tudo', ocupadoTexto: 'Limpando...',
+      acao: async function(){
+        if (!(await garantirPermissaoEscrita(CONTROLE_JSON_FILE_HANDLE))) { throw new Error('Permiss\u00e3o de escrita negada.'); }
+        const file = await CONTROLE_JSON_FILE_HANDLE.getFile();
+        const dadosDisco = JSON.parse(await file.text());
+        dadosDisco.registros = [];
+        const writable = await CONTROLE_JSON_FILE_HANDLE.createWritable();
+        await writable.write(JSON.stringify(dadosDisco, null, 2));
+        await writable.close();
+        CONTROLE_JSON_DATA = dadosDisco;
+        await carregarControleAnalise();
+        setStatus('\uD83E\uDDF9 Controle limpo: todos os registros foram removidos.');
+      }
+    });
   }
 
   // ==================== IMPORTACAO ====================

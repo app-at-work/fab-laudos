@@ -652,7 +652,7 @@
       <div class="mon-toggle" id="monToggleControle" style="display:inline-flex; border:1px solid var(--border); border-radius:6px; overflow:hidden;">
         <button type="button" data-val="TODOS" class="active" onclick="setMonControle('TODOS')">Todos</button>
         <button type="button" data-val="COM" onclick="setMonControle('COM')">✅ Com controle</button>
-        <button type="button" data-val="SEM" onclick="setMonControle('SEM')">⚠️ Sem controle</button>
+        <button type="button" data-val="SEM" title="Laudos Normal n\u00e3o exigem a\u00e7\u00e3o e n\u00e3o entram aqui" onclick="setMonControle('SEM')">⚠️ Sem controle</button>
       </div>
       <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-soft); white-space:nowrap;">
         De <input type="date" id="monDe" onchange="renderizarMonitoramento()" style="padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px;">
@@ -936,6 +936,10 @@
   const COLUNA_STATUS       = '📌 Status Controle';
   const COLUNA_TIPO         = 'TIPO_LAUDO';   // 'Óleo' | 'Arrefecimento' (origem do laudo)
   const CONTROLE_INDEX = new Map();
+  // Laudo com OVERALL_INTERP Normal (NAR) nao exige acao: sem registro de controle ele NAO conta como "sem controle"
+  const STATUS_NORMAL_SEM_ACAO = '\uD83D\uDFE2 Normal (sem a\u00e7\u00e3o)';
+  const STATUS_SEM_CONTROLE = '\u26A0\ufe0f Sem controle';
+  function _laudoNormal(l){ return _monCatOverall(l && l['OVERALL_INTERP']) === 'NORMAL'; }
   let filtroSomenteSemControle = false;
   let CONTROLE_JSON_FILE_HANDLE = null; let CONTROLE_JSON_DATA = null; let CONTROLE_JSON_ARQ = null;
   let EDITANDO_AMOSTRA = null; let EDITANDO_IDX = -1; let EDITANDO_UID = null; let CONTROLE_FLAT = [];
@@ -2256,7 +2260,7 @@ for (const linha of d.linhas) {
       if (ctrls.length === 0) {
         const linha = Object.assign({}, baseCols);
         for (const c of COLUNAS_CONTROLE) linha[c] = '';
-        linha[COLUNA_STATUS] = '\u26A0\ufe0f Sem controle';
+        linha[COLUNA_STATUS] = _laudoNormal(laudo) ? STATUS_NORMAL_SEM_ACAO : STATUS_SEM_CONTROLE;
         linha['__idx'] = -1;
         linha['__uid'] = '';
         linhas.push(linha);
@@ -2266,7 +2270,7 @@ for (const linha of d.linhas) {
           let _temDado = false;
           for (const c of COLUNAS_CONTROLE) { const v = ctrl[c]; const _val = (v !== undefined && v !== null) ? (typeof v === 'object' ? JSON.stringify(v) : v) : ''; linha[c] = _val; if (String(_val).trim() !== '') _temDado = true; }
           // "Com controle" apenas se houver DADOS preenchidos em alguma coluna de controle (nao apenas registro no JSON)
-          linha[COLUNA_STATUS] = _temDado ? '\u2705 Com controle' : '\u26A0\ufe0f Sem controle';
+          linha[COLUNA_STATUS] = _temDado ? '\u2705 Com controle' : (_laudoNormal(laudo) ? STATUS_NORMAL_SEM_ACAO : STATUS_SEM_CONTROLE);
           linha['__idx'] = (ctrl.__idx !== undefined) ? ctrl.__idx : -1;
           linha['__uid'] = (ctrl.__uid !== undefined) ? ctrl.__uid : '';
           linhas.push(linha);
@@ -2305,7 +2309,7 @@ for (const linha of d.linhas) {
     const b = document.getElementById('cbadge-CONTROLE_ANALISE');
     if (!b) return;
     if (!DADOS_CONTROLE_ANALISE.carregado) { b.textContent = '\u2014'; return; }
-    const total = DADOS_CONTROLE_ANALISE.linhas.length;
+    const total = DADOS_CONTROLE_ANALISE.linhas.filter(l => l[COLUNA_STATUS] !== STATUS_NORMAL_SEM_ACAO).length;
     const com = DADOS_CONTROLE_ANALISE.linhas.filter(l => l[COLUNA_STATUS] === '\u2705 Com controle').length;
     b.textContent = com + '/' + total;
   }
@@ -2587,7 +2591,7 @@ for (const linha of d.linhas) {
       if (MON_FILTRO_CONTROLE !== 'TODOS'){
         const temCtrl = _monTemControle(l['TEXT_ID']);
         if (MON_FILTRO_CONTROLE === 'COM' && !temCtrl) continue;
-        if (MON_FILTRO_CONTROLE === 'SEM' && temCtrl) continue;
+        if (MON_FILTRO_CONTROLE === 'SEM' && (temCtrl || cat === 'NORMAL')) continue;   // Normal nao exige acao
       }
       if (ts == null){ semData++; catsTot[cat]++; total++; continue; }
       if (deTs !== null && ts < deTs) continue;
@@ -2615,7 +2619,7 @@ for (const linha of d.linhas) {
 
     const filtroTxt = [];
     if (MON_FILTRO_CONTROLE === 'COM') filtroTxt.push('✅ apenas com controle');
-    else if (MON_FILTRO_CONTROLE === 'SEM') filtroTxt.push('⚠️ apenas sem controle');
+    else if (MON_FILTRO_CONTROLE === 'SEM') filtroTxt.push('⚠️ apenas sem controle (exceto Normal)');
     if (deVal) filtroTxt.push('📅 de ' + deVal.split('-').reverse().join('/'));
     if (ateVal) filtroTxt.push('até ' + ateVal.split('-').reverse().join('/'));
     document.getElementById('monFiltroInfo').textContent = filtroTxt.length ? '🔎 ' + filtroTxt.join(' · ') : '';
@@ -2860,7 +2864,8 @@ for (const linha of d.linhas) {
       }
     }
     if (F.STATUS === 'COM' && l[COLUNA_STATUS] !== '\u2705 Com controle') return false;
-    if (F.STATUS === 'SEM' && l[COLUNA_STATUS] !== '\u26A0\ufe0f Sem controle') return false;
+    if (F.STATUS === 'SEM' && l[COLUNA_STATUS] !== STATUS_SEM_CONTROLE) return false;
+    if (F.STATUS === 'NORMAL' && l[COLUNA_STATUS] !== STATUS_NORMAL_SEM_ACAO) return false;
     return true;
   }
 
@@ -2872,11 +2877,13 @@ for (const linha of d.linhas) {
     const stats = document.getElementById('controleStats');
     const totalLaudos = dados.linhas.length;
     const comControle = dados.linhas.filter(l => l[COLUNA_STATUS] === '\u2705 Com controle').length;
-    const semControle = totalLaudos - comControle;
+    const normalSemAcao = dados.linhas.filter(l => l[COLUNA_STATUS] === STATUS_NORMAL_SEM_ACAO).length;
+    const semControle = totalLaudos - comControle - normalSemAcao;
     const amostrasUnicas = dados._amostrasUnicas || 0;
     stats.innerHTML = '<span>📊 Total laudos: <b>' + totalLaudos + '</b></span>' +
                       '<span style="color:var(--success)">\u2705 Com controle: <b>' + comControle + '</b></span>' +
                       '<span style="color:var(--warn)">\u26A0\ufe0f Sem controle: <b>' + semControle + '</b></span>' +
+                      '<span style="color:#2e7d32" title="Laudos Normal n\u00e3o exigem a\u00e7\u00e3o: n\u00e3o contam como sem controle">\uD83D\uDFE2 Normal (sem a\u00e7\u00e3o): <b>' + normalSemAcao + '</b></span>' +
                       '<span>🔑 Amostras no JSON: <b>' + amostrasUnicas + '</b></span>' +
                       (dados.linhas.some(l => l[COLUNA_TIPO] === 'Arrefecimento') ? '<span style="color:#00838f">🧊 Arrefecimento: <b>' + dados.linhas.filter(l => l[COLUNA_TIPO] === 'Arrefecimento').length + '</b></span>' : '');
     const badgeFiltros = document.getElementById('badgeFiltros');
@@ -2946,7 +2953,8 @@ for (const linha of d.linhas) {
           if (c === COLUNA_TIPO) extra = (val === 'Arrefecimento') ? ' style="color:#00838f; font-weight:600;"' : ' style="color:#1565c0; font-weight:600;"';
           if (c === COLUNA_STATUS) {
             if (val === '\u2705 Com controle') extra = ' style="background:#e8f5e9; color:var(--success); font-weight:600;"';
-            else if (val === '\u26A0\ufe0f Sem controle') extra = ' style="background:#fff8e1; color:var(--warn); font-weight:600;"';
+            else if (val === STATUS_SEM_CONTROLE) extra = ' style="background:#fff8e1; color:var(--warn); font-weight:600;"';
+            else if (val === STATUS_NORMAL_SEM_ACAO) extra = ' style="background:#f1f8f4; color:#2e7d32; font-weight:600;"';
           }
           const _fDataC = formatarColunaData(c, val); const _dispValC = (c === 'OVERALL_INTERP') ? badgeOverallInterp(val) : (_fDataC !== null ? escapeHTML(_fDataC) : escapeHTML(String(val))); tblHtml += '<td' + extra + ' title="' + escapeHTML(String(val)) + '">' + _dispValC + '</td>';
         });
@@ -3058,6 +3066,50 @@ for (const linha of d.linhas) {
   function fecharModalRegistro() { document.getElementById('modalRegistro').classList.remove('show'); EDITANDO_AMOSTRA = null; EDITANDO_IDX = -1; EDITANDO_UID = null; }
   function mostrarErroRegistro(msg) { const el = document.getElementById('modalRegistroErro'); el.textContent = msg; el.style.display = 'block'; }
 
+  // ===== Garante o arquivo controle_laudos.json: se nao existir na pasta CONTROLE LAUDOS, cria um novo la =====
+  // Retorna true quando CONTROLE_JSON_FILE_HANDLE fica disponivel. Lanca Error com mensagem amigavel em caso de falha.
+  const CONTROLE_JSON_NOME = 'controle_laudos.json';
+  async function garantirArquivoControleJson(){
+    if (CONTROLE_JSON_FILE_HANDLE) return true;
+    if (!diretorioHandle) return false;
+    // permissao de escrita na pasta raiz (precisa ser chamada logo no clique do usuario)
+    if (!(await garantirPermissaoEscrita(diretorioHandle))) { throw new Error('Permiss\u00e3o de escrita negada. Clique novamente e permita o acesso \u00e0 pasta.'); }
+    // 1) pasta CONTROLE LAUDOS (cria se tambem nao existir)
+    let dir = ESTRUTURA.CONTROLE.handle;
+    if (!dir) {
+      dir = await diretorioHandle.getDirectoryHandle(ESTRUTURA.CONTROLE.nome || 'CONTROLE LAUDOS', { create: true });
+      ESTRUTURA.CONTROLE.handle = dir; ESTRUTURA.CONTROLE.encontrada = true; ESTRUTURA.CONTROLE.nomeReal = dir.name;
+    }
+    // 2) se o arquivo ja existir (e nao tiver sido carregado), NUNCA sobrescreve: so reaproveita se for um JSON valido
+    let fh = null; let dados = { registros: [] };
+    try { fh = await dir.getFileHandle(CONTROLE_JSON_NOME); } catch (e) { fh = null; }
+    if (fh) {
+      const txt = await (await fh.getFile()).text();
+      if (txt.trim()) {
+        let j; try { j = JSON.parse(txt); } catch (e) { throw new Error(CONTROLE_JSON_NOME + ' j\u00e1 existe na pasta CONTROLE LAUDOS mas n\u00e3o p\u00f4de ser lido (JSON inv\u00e1lido). Corrija o arquivo para n\u00e3o perder dados.'); }
+        if (Array.isArray(j)) j = { registros: j };
+        if (!j || typeof j !== 'object' || !Array.isArray(j.registros)) throw new Error(CONTROLE_JSON_NOME + ' j\u00e1 existe mas n\u00e3o est\u00e1 no formato esperado ({ "registros": [] }).');
+        dados = j;
+      }
+    } else {
+      // 3) cria o arquivo novo, vazio, no formato do app
+      fh = await dir.getFileHandle(CONTROLE_JSON_NOME, { create: true });
+      const w = await fh.createWritable();
+      await w.write(JSON.stringify(dados, null, 2));
+      await w.close();
+    }
+    // 4) registra na estrutura para que a recarga do Controle Analise e o badge enxerguem o arquivo
+    const file = await fh.getFile();
+    const arq = { nome: CONTROLE_JSON_NOME, tipo: 'json', tamanho: file.size, modificado: file.lastModified, handle: fh, origem: 'CONTROLE', origemLabel: ESTRUTURA.CONTROLE.nome };
+    ESTRUTURA.CONTROLE.arquivos = ESTRUTURA.CONTROLE.arquivos.filter(a => a.nome !== CONTROLE_JSON_NOME);
+    ESTRUTURA.CONTROLE.arquivos.push(arq);
+    ESTRUTURA.CONTROLE.arquivos.sort((a, b) => a.nome.localeCompare(b.nome));
+    CONTROLE_JSON_FILE_HANDLE = fh; CONTROLE_JSON_DATA = dados; CONTROLE_JSON_ARQ = arq;
+    if (DADOS.CONTROLE) { DADOS.CONTROLE.carregado = false; }
+    atualizarContadores();
+    setStatus('\uD83D\uDCC4 ' + CONTROLE_JSON_NOME + ' criado na pasta ' + (ESTRUTURA.CONTROLE.nomeReal || 'CONTROLE LAUDOS') + '.');
+    return true;
+  }
   async function salvarRegistro() {
     const amostra = document.getElementById('fldAmostra').value.trim();
     const acao = document.getElementById('fldAcao').value.trim();
@@ -3066,7 +3118,10 @@ for (const linha of d.linhas) {
     const obs = document.getElementById('fldObservacao').value.trim();
     const com = document.getElementById('fldComentario').value.trim();
     if (!amostra) return mostrarErroRegistro('Preencha a Amostra (TEXT_ID).');
-    if (!CONTROLE_JSON_FILE_HANDLE) return mostrarErroRegistro('Nenhum arquivo controle_laudos.json carregado.');
+    if (!CONTROLE_JSON_FILE_HANDLE) {
+      try { await garantirArquivoControleJson(); } catch (err) { return mostrarErroRegistro('Erro ao criar o controle_laudos.json: ' + err.message); }
+      if (!CONTROLE_JSON_FILE_HANDLE) return mostrarErroRegistro('Selecione a pasta raiz antes de registrar a an\u00e1lise.');
+    }
     try {
       if (!(await garantirPermissaoEscrita(CONTROLE_JSON_FILE_HANDLE))) { throw new Error('Permiss\u00e3o de escrita negada. Clique novamente e permita o acesso \u00e0 pasta.'); }
       // Read-modify-write: relê o arquivo ATUAL do disco antes de gravar,
@@ -3241,6 +3296,7 @@ for (const linha of d.linhas) {
         '<label><input type="radio" name="fStatus" value="TODOS" ' + (F.STATUS==='TODOS'?'checked':'') + '> Todos</label>' +
         '<label><input type="radio" name="fStatus" value="COM" ' + (F.STATUS==='COM'?'checked':'') + '> \u2705 Com controle</label>' +
         '<label><input type="radio" name="fStatus" value="SEM" ' + (F.STATUS==='SEM'?'checked':'') + '> \u26A0\ufe0f Sem controle</label>' +
+        '<label><input type="radio" name="fStatus" value="NORMAL" ' + (F.STATUS==='NORMAL'?'checked':'') + '> \uD83D\uDFE2 Normal (sem a\u00e7\u00e3o)</label>' +
       '</div></div>' +
       '<div class="filtros-secao"><div class="filtros-titulo">Base Laudos</div><div class="form-grid">' +
         '<div class="form-row">' + msDropdownHTML('EQUIP_NUMBER','EQUIP_NUMBER') + '</div>' +
@@ -3359,8 +3415,8 @@ for (const linha of d.linhas) {
     document.getElementById('importPreview').innerHTML = '';
     document.getElementById('btnConfirmarImport').disabled = true;
     IMPORT_REGISTROS_VALIDOS = [];
-    if (!CONTROLE_JSON_FILE_HANDLE) {
-      document.getElementById('importPreview').innerHTML = '<div class="import-erros">\u26A0\ufe0f Nenhum controle_laudos.json carregado. Selecione a pasta raiz para gravar a importa\u00e7\u00e3o.</div>';
+    if (!diretorioHandle) {
+      document.getElementById('importPreview').innerHTML = '<div class="import-erros">\u26A0\ufe0f Selecione a pasta raiz para gravar a importa\u00e7\u00e3o (o controle_laudos.json ser\u00e1 criado em CONTROLE LAUDOS se ainda n\u00e3o existir).</div>';
     }
     document.getElementById('modalImportar').classList.add('show');
   }
@@ -3420,11 +3476,14 @@ for (const linha of d.linhas) {
     }
     if (validos.length === 0) html2 += '<p style="color:var(--danger); font-size:12px; margin-top:8px;">Nenhum registro v\u00e1lido para importar.</p>';
     preview.innerHTML = html2;
-    btn.disabled = (validos.length === 0) || !CONTROLE_JSON_FILE_HANDLE;
+    btn.disabled = (validos.length === 0) || !diretorioHandle;
   }
   async function confirmarImportacao() {
     if (!IMPORT_REGISTROS_VALIDOS.length) { alert('Nenhum registro v\u00e1lido para importar.'); return; }
-    if (!CONTROLE_JSON_FILE_HANDLE) { alert('Nenhum controle_laudos.json carregado.'); return; }
+    if (!CONTROLE_JSON_FILE_HANDLE) {
+      try { await garantirArquivoControleJson(); } catch (err) { alert('Erro ao criar o controle_laudos.json: ' + err.message); return; }
+      if (!CONTROLE_JSON_FILE_HANDLE) { alert('Selecione a pasta raiz antes de importar.'); return; }
+    }
     try {
       if (!(await garantirPermissaoEscrita(CONTROLE_JSON_FILE_HANDLE))) { throw new Error('Permiss\u00e3o de escrita negada.'); }
       // Read-modify-write: relê o arquivo ATUAL do disco antes de gravar em lote,
